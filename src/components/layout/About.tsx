@@ -116,13 +116,21 @@ function LifeTimeline() {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    const onScroll = () => {
-      const scrollLeft = el.scrollLeft;
-      const cardWidth = 340;
-      const index = Math.round(scrollLeft / cardWidth);
-      setActiveIndex(Math.min(Math.max(index, 0), timeline.length - 1));
+    const getActiveIndex = () => {
+      const cards = el.querySelectorAll<HTMLElement>('[data-timeline-card]');
+      const scrollCenter = el.scrollLeft + el.clientWidth / 2;
+      let closest = 0;
+      let minDist = Infinity;
+      cards.forEach((card, i) => {
+        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+        const dist = Math.abs(scrollCenter - cardCenter);
+        if (dist < minDist) { minDist = dist; closest = i; }
+      });
+      return closest;
     };
+    const onScroll = () => setActiveIndex(getActiveIndex());
     el.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
     return () => el.removeEventListener('scroll', onScroll);
   }, [timeline.length]);
 
@@ -130,7 +138,10 @@ function LifeTimeline() {
     const el = scrollRef.current;
     if (!el) return;
     const clamped = Math.min(Math.max(index, 0), timeline.length - 1);
-    el.scrollTo({ left: clamped * 340, behavior: 'smooth' });
+    const card = el.querySelectorAll<HTMLElement>('[data-timeline-card]')[clamped];
+    if (card) {
+      el.scrollTo({ left: card.offsetLeft - (el.clientWidth - card.offsetWidth) / 2, behavior: 'smooth' });
+    }
   };
 
   const goPrev = () => scrollTo(activeIndex - 1);
@@ -258,6 +269,7 @@ function LifeTimeline() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               onClick={() => scrollTo(i)}
+              data-timeline-card=""
               className={`flex-shrink-0 w-[300px] snap-center p-6 rounded-2xl border transition-all duration-300 select-none ${
                 i === activeIndex
                   ? 'bg-[var(--color-bg-control)] border-[var(--color-warn-orange)]/50 shadow-lg shadow-[var(--color-warn-orange)]/10 scale-[1.02]'
