@@ -9,3 +9,4 @@ export * from './useTeam';
 export * from './useClients';
 export * from './useCertifications';
 export * from './useServices';
+export * from './useCountUp';
