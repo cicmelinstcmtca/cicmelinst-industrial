@@ -26,10 +26,15 @@ function AppContent() {
 
   const handleSectionNavigate = useCallback((section: string) => {
     const targetId = section as SectionId;
-    const element = document.getElementById(targetId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    const attempt = (retries = 0) => {
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      } else if (retries < 10) {
+        setTimeout(() => attempt(retries + 1), 200);
+      }
+    };
+    attempt();
   }, []);
 
   useEffect(() => {

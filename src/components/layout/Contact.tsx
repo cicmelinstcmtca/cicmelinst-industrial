@@ -24,7 +24,11 @@ export function Contact() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Form submitted:', form);
+    const subject = encodeURIComponent(`Cotización: ${form.service || 'Servicios'}`);
+    const body = encodeURIComponent(
+      `Nombre: ${form.name}\nEmpresa: ${form.company || 'N/A'}\nEmail: ${form.email}\nTeléfono: ${form.phone}\nServicio: ${form.service}\n\n${form.message}`
+    );
+    window.open(`mailto:${company.email}?subject=${subject}&body=${body}`);
     setSubmitted(true);
   };
 
@@ -86,7 +90,7 @@ export function Contact() {
                   Nos pondremos en contacto con usted en las próximas horas.
                 </p>
                 <button
-                  onClick={() => setSubmitted(false)}
+                  onClick={() => { setSubmitted(false); setForm(INITIAL_FORM); }}
                   className="px-6 py-3 border border-[var(--color-pipe-blue-glow)] text-[var(--color-pipe-blue-glow)] rounded-lg hover:bg-[var(--color-pipe-blue-glow)] hover:text-[var(--color-bg-control)] transition-all font-medium"
                 >
                   Enviar otro mensaje

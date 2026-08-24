@@ -15,7 +15,7 @@ export const companyConfig: CompanyConfig = {
   email: "CICMELINST.EPS@GMAIL.COM",
   phone: "+58 424 883 8856",
   phoneDisplay: "+58 424 883 8856",
-  whatsapp: "+584248838856",
+  whatsapp: "584248838856",
   schedule: "Lun - Vie: 7:00 AM - 5:00 PM\nSáb: 7:00 AM - 12:00 PM",
   social: {
     linkedin: "#",

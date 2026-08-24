@@ -40,9 +40,19 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4 uppercase tracking-wider" style={{ fontFamily: 'var(--font-family-display)' }}>Servicios</h4>
             <ul className="space-y-2">
-              {['Montaje Eléctrico', 'Automatización', 'Construcción Civil', 'Instrumentación'].map((s) => (
-                <li key={s}>
-                  <span className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer">{s}</span>
+              {[
+                { name: 'Montaje Eléctrico', href: 'capabilities' },
+                { name: 'Automatización', href: 'capabilities' },
+                { name: 'Construcción Civil', href: 'capabilities' },
+                { name: 'Instrumentación', href: 'capabilities' },
+              ].map((s) => (
+                <li key={s.name}>
+                  <button
+                    onClick={() => document.getElementById(s.href)?.scrollIntoView({ behavior: 'smooth' })}
+                    className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer"
+                  >
+                    {s.name}
+                  </button>
                 </li>
               ))}
             </ul>
