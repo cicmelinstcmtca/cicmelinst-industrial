@@ -1,0 +1,1 @@
+﻿{"type":"github","config":{"owner":"cicmelinstcmtca","repo_name":"cicmelinst-industrial","production_branch":"main","deployments_enabled":true,"production_deployments_enabled":true,"pr_comments_enabled":true,"preview_deployment_setting":"all","preview_branch_includes":["*"],"preview_branch_excludes":[],"path_includes":["*"],"path_excludes":[]}}

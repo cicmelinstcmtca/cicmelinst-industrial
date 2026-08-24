@@ -19,7 +19,7 @@ const SECTIONS = [
 
 type SectionId = typeof SECTIONS[number]['id'];
 
-function App() {
+function AppContent() {
   const { theme, mounted } = useTheme();
   const [woNumber] = useState(() => generateWorkOrderNumber());
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -120,6 +120,32 @@ function App() {
         WO: {woNumber}
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ErrorBoundary
+      fallback={
+        <div className="min-h-[100dvh] bg-control flex items-center justify-center">
+          <div className="text-center p-8">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h1 className="text-h2 text-primary font-display mb-4">SISTEMA FUERA DE SERVICIO</h1>
+            <p className="text-secondary mb-6 max-w-md mx-auto">
+              Ha ocurrido un error inesperado. Por favor, recargue la página.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn-primary"
+            >
+              RECARGAR SISTEMA
+            </button>
+          </div>
+        </div>
+      }
+    >
+      <AppContent />
+    </ErrorBoundary>
   );
 }
 
