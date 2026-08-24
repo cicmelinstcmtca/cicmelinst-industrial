@@ -116,38 +116,24 @@ function LifeTimeline() {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    const getActiveIndex = () => {
-      const cards = el.querySelectorAll<HTMLElement>('[data-timeline-card]');
-      if (!cards.length) return 0;
-      const elRect = el.getBoundingClientRect();
-      const viewCenter = elRect.left + elRect.width / 2;
-      let closest = 0;
-      let minDist = Infinity;
-      cards.forEach((card, i) => {
-        const cardRect = card.getBoundingClientRect();
-        const cardCenter = cardRect.left + cardRect.width / 2;
-        const dist = Math.abs(viewCenter - cardCenter);
-        if (dist < minDist) { minDist = dist; closest = i; }
-      });
-      return closest;
+    const updateIndex = () => {
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (maxScroll <= 0) { setActiveIndex(0); return; }
+      const ratio = el.scrollLeft / maxScroll;
+      const idx = Math.round(ratio * (timeline.length - 1));
+      setActiveIndex(Math.min(Math.max(idx, 0), timeline.length - 1));
     };
-    const onScroll = () => setActiveIndex(getActiveIndex());
-    el.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => el.removeEventListener('scroll', onScroll);
+    el.addEventListener('scroll', updateIndex, { passive: true });
+    updateIndex();
+    return () => el.removeEventListener('scroll', updateIndex);
   }, [timeline.length]);
 
   const scrollTo = (index: number) => {
     const el = scrollRef.current;
     if (!el) return;
     const clamped = Math.min(Math.max(index, 0), timeline.length - 1);
-    const card = el.querySelectorAll<HTMLElement>('[data-timeline-card]')[clamped];
-    if (card) {
-      const elRect = el.getBoundingClientRect();
-      const cardRect = card.getBoundingClientRect();
-      const offset = cardRect.left - elRect.left - (elRect.width - cardRect.width) / 2;
-      el.scrollTo({ left: el.scrollLeft + offset, behavior: 'smooth' });
-    }
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    el.scrollTo({ left: (clamped / (timeline.length - 1)) * maxScroll, behavior: 'smooth' });
   };
 
   const goPrev = () => scrollTo(activeIndex - 1);
