@@ -5,6 +5,7 @@ import { MarqueeSection } from './components/ui';
 import { useTheme } from './hooks';
 import { generateWorkOrderNumber } from './utils/helpers';
 import { LazyLoad, LazyFleet, LazyProjects, LazyCapabilities, LazyTeam, LazyContact } from './components/LazyLoad';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const SECTIONS = [
   { id: 'hero', label: 'ESQUEMA' },
@@ -21,6 +22,7 @@ type SectionId = typeof SECTIONS[number]['id'];
 function App() {
   const { theme, mounted } = useTheme();
   const [woNumber] = useState(() => generateWorkOrderNumber());
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const handleSectionNavigate = useCallback((section: string) => {
     const targetId = section as SectionId;
@@ -30,21 +32,13 @@ function App() {
     }
   }, []);
 
-  const handleScroll = useCallback(() => {
-    const scrollPosition = window.scrollY + window.innerHeight / 3;
-
-    SECTIONS.forEach(section => {
-      const element = document.getElementById(section.id);
-      if (element && element.offsetTop <= scrollPosition) {
-        // newActive logic could be used for future active section tracking
-      }
-    });
-  }, []);
-
   useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 300);
+    };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
+  }, []);
 
   if (!mounted) {
     return (
@@ -68,46 +62,59 @@ function App() {
       <Header onSectionNavigate={handleSectionNavigate} />
 
       <main id="main-content" className="pt-20 lg:pt-24" role="main">
-        <Hero onSectionNavigate={handleSectionNavigate} />
+        <ErrorBoundary sectionName="Hero">
+          <Hero onSectionNavigate={handleSectionNavigate} />
+        </ErrorBoundary>
 
         <MarqueeSection />
 
         <LazyLoad>
-          <LazyCapabilities />
+          <ErrorBoundary sectionName="Capacidades">
+            <LazyCapabilities />
+          </ErrorBoundary>
         </LazyLoad>
 
         <LazyLoad>
-          <LazyProjects />
+          <ErrorBoundary sectionName="Bitácora">
+            <LazyProjects />
+          </ErrorBoundary>
         </LazyLoad>
 
         <LazyLoad>
-          <LazyFleet />
+          <ErrorBoundary sectionName="Flota">
+            <LazyFleet />
+          </ErrorBoundary>
         </LazyLoad>
 
         <LazyLoad>
-          <LazyTeam />
+          <ErrorBoundary sectionName="Equipo">
+            <LazyTeam />
+          </ErrorBoundary>
         </LazyLoad>
 
         <LazyLoad>
-          <LazyContact />
+          <ErrorBoundary sectionName="Contacto">
+            <LazyContact />
+          </ErrorBoundary>
         </LazyLoad>
       </main>
 
       <Footer />
 
-      <motion.button
-        className="fixed bottom-6 right-6 z-[40] p-3 radius-panel bg-panel border border-panel/50 hover:border-warn-orange hover:bg-warn-orange/10 transition-all shadow-modal"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, margin: '-200px' }}
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        aria-label="Volver al esquema principal"
-        style={{ display: window.scrollY > 300 ? 'flex' : 'none' }}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <path d="M18 15l-6-6-6 6"/>
-        </svg>
-      </motion.button>
+      {showBackToTop && (
+        <motion.button
+          className="fixed bottom-6 right-6 z-[40] p-3 radius-panel bg-panel border border-panel/50 hover:border-warn-orange hover:bg-warn-orange/10 transition-all shadow-modal"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Volver al esquema principal"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M18 15l-6-6-6 6"/>
+          </svg>
+        </motion.button>
+      )}
 
       <div className="fixed bottom-2 left-2 z-[10] text-micro text-muted/50 font-mono select-none pointer-events-none">
         WO: {woNumber}

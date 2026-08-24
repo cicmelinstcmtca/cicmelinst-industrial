@@ -14,9 +14,7 @@ if ('serviceWorker' in navigator) {
           newWorker?.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
               console.log('[SW] New version available');
-              if (confirm('Nueva versión disponible. ¿Recargar?')) {
-                window.location.reload();
-              }
+              window.location.reload();
             }
           });
         });

@@ -1,12 +1,10 @@
-import { useRef, useEffect, useState, Suspense } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { useRef, useEffect, useState } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, Html, ContactShadows, useProgress } from '@react-three/drei';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-import { LoadingManager } from 'three';
 import { motion, AnimatePresence } from 'motion/react';
 import { Badge } from '../ui';
+import { ErrorBoundary } from '../ErrorBoundary';
 import type { FleetVehicle } from '../../types';
 
 interface FleetViewerProps {
@@ -18,13 +16,23 @@ interface FleetViewerProps {
 
 const defaultOnSelectVehicle = (_vehicle: FleetVehicle | null) => { /* noop */ };
 
-const loadingManager = new LoadingManager();
-const DRACO_LOADER = new DRACOLoader(loadingManager);
-DRACO_LOADER.setDecoderPath('/draco/');
-DRACO_LOADER.setDecoderConfig({ type: 'js' });
+function detectWebGL(): boolean {
+  try {
+    const canvas = document.createElement('canvas');
+    return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+  } catch {
+    return false;
+  }
+}
 
-const GLTF_LOADER = new GLTFLoader(loadingManager);
-GLTF_LOADER.setDRACOLoader(DRACO_LOADER);
+const VEHICLE_COLORS: Record<string, string> = {
+  truck: '#0D47A1',
+  pickup: '#1565C0',
+  crane: '#E65100',
+  forklift: '#2E7D32',
+  trailer: '#4A148C',
+  utility: '#00838F',
+};
 
 interface VehicleModelProps {
   vehicle: FleetVehicle;
@@ -36,36 +44,30 @@ interface VehicleModelProps {
 
 const VehicleModel = ({ vehicle, isSelected, onClick, position, rotation }: VehicleModelProps) => {
   const groupRef = useRef<THREE.Group>(null);
-  const { scene } = useLoader(GLTF_LOADER, vehicle.modelUrl || '/models/generic-vehicle.glb');
+  const color = VEHICLE_COLORS[vehicle.type] || '#0D47A1';
 
-  useEffect(() => {
-    if (groupRef.current && scene) {
-      const cloned = scene.clone(true);
-      cloned.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      });
-      groupRef.current.add(cloned);
-    }
-  }, [scene]);
-
-  useFrame((_state, delta) => {
-    if (groupRef.current && !isSelected) {
-      groupRef.current.rotation.y += delta * 0.05;
+  useFrame(() => {
+    if (groupRef.current && isSelected) {
+      groupRef.current.position.y = Math.sin(Date.now() * 0.003) * 0.15;
     }
   });
 
   return (
-    <group
-      ref={groupRef}
-      position={position}
-      rotation={rotation}
-      onClick={onClick}
-      onPointerOver={() => { if (groupRef.current) groupRef.current.scale.setScalar(1.05); }}
-      onPointerOut={() => { if (groupRef.current) groupRef.current.scale.setScalar(1); }}
-    >
+    <group ref={groupRef} position={position} rotation={rotation} onClick={onClick}>
+      <mesh position={[0, 0.6, 0]} castShadow receiveShadow>
+        <boxGeometry args={[2.5, 1.2, 4]} />
+        <meshStandardMaterial
+          color={color}
+          metalness={0.4}
+          roughness={0.6}
+          emissive={isSelected ? color : '#000000'}
+          emissiveIntensity={isSelected ? 0.3 : 0}
+        />
+      </mesh>
+      <mesh position={[0, 1.4, -0.5]} castShadow>
+        <boxGeometry args={[2, 0.8, 1.8]} />
+        <meshStandardMaterial color="#1a1a2e" metalness={0.5} roughness={0.3} />
+      </mesh>
       <Html
         transform
         position={[0, -2.5, 0]}
@@ -74,49 +76,15 @@ const VehicleModel = ({ vehicle, isSelected, onClick, position, rotation }: Vehi
         wrapperClass="vehicle-label"
         prepend
       >
-        <motion.div
-          className={`vehicle-label-inner ${isSelected ? 'selected' : ''}`}
-          animate={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 10 }}
-          transition={{ duration: 0.3 }}
-        >
+        <div className="vehicle-label-inner">
           <span className="label-tag">{vehicle.id}</span>
           <div className="text-small text-primary font-medium">{vehicle.model}</div>
-          <Badge variant={isSelected ? 'progress' : 'default'} size="sm" dot>
-            {vehicle.count} UNIDADES
-          </Badge>
-        </motion.div>
+          <Badge variant="default" size="sm" dot>{vehicle.count} UNIDADES</Badge>
+        </div>
       </Html>
     </group>
   );
 };
-
-const VehicleModelFallback = ({ vehicle, position }: { vehicle: FleetVehicle; position: THREE.Vector3 }) => (
-  <group position={position}>
-    <mesh castShadow receiveShadow>
-      <boxGeometry args={[3, 1.5, 5]} />
-      <meshStandardMaterial color="#1565C0" metalness={0.3} roughness={0.7} />
-    </mesh>
-    <mesh position={[0, 1.2, 0]} castShadow receiveShadow>
-      <boxGeometry args={[2, 1, 3]} />
-      <meshStandardMaterial color="#0D47A1" metalness={0.3} roughness={0.7} />
-    </mesh>
-    <Html
-      transform
-      position={[0, -2.5, 0]}
-      occlude
-      fullscreen
-      wrapperClass="vehicle-label"
-      prepend
-    >
-      <div className="vehicle-label-inner">
-        <span className="label-tag">{vehicle.id}</span>
-        <div className="text-small text-primary font-medium">{vehicle.model}</div>
-        <Badge variant="default" size="sm" dot>{vehicle.count} UNIDADES</Badge>
-      </div>
-    </Html>
-  </group>
-);
 
 const GroundPlane = () => (
   <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]} receiveShadow>
@@ -135,9 +103,14 @@ const GridHelper = () => {
   const grid = useRef<THREE.GridHelper>(null);
 
   useEffect(() => {
-    if (grid.current) {
-      grid.current.material.opacity = 0.1;
-      grid.current.material.transparent = true;
+    if (grid.current && Array.isArray(grid.current.material)) {
+      grid.current.material.forEach((m) => {
+        m.opacity = 0.1;
+        m.transparent = true;
+      });
+    } else if (grid.current?.material) {
+      (grid.current.material as THREE.Material).opacity = 0.1;
+      (grid.current.material as THREE.Material).transparent = true;
     }
   }, []);
 
@@ -173,11 +146,7 @@ const SceneContent = ({ vehicles, selectedVehicle, onSelectVehicle, isMobile }: 
       <color attach="background" args={['#0A0F14']} />
       <fog attach="fog" args={['#0A0F14', 10, 60]} />
 
-      <Environment
-        preset="warehouse"
-        background={false}
-        ground={false}
-      />
+      <Environment preset="warehouse" background={false} ground={false} />
 
       <ambientLight intensity={0.5} color="#4A5568" />
       <directionalLight
@@ -197,19 +166,17 @@ const SceneContent = ({ vehicles, selectedVehicle, onSelectVehicle, isMobile }: 
 
       <GroundPlane />
       <GridHelper />
-
       <ContactShadows opacity={0.15} scale={10} blur={2} far={10} />
 
       {vehicles.map((vehicle, index) => (
-        <Suspense key={vehicle.id} fallback={<VehicleModelFallback vehicle={vehicle} position={positions[index]} />}>
-          <VehicleModel
-            vehicle={vehicle}
-            isSelected={selectedVehicle?.id === vehicle.id}
-            onClick={() => onSelectVehicle(vehicle)}
-            position={positions[index]}
-            rotation={new THREE.Euler(0, (index * 137.5) * Math.PI / 180, 0)}
-          />
-        </Suspense>
+        <VehicleModel
+          key={vehicle.id}
+          vehicle={vehicle}
+          isSelected={selectedVehicle?.id === vehicle.id}
+          onClick={() => onSelectVehicle(vehicle)}
+          position={positions[index]}
+          rotation={new THREE.Euler(0, (index * 137.5) * Math.PI / 180, 0)}
+        />
       ))}
 
       <OrbitControls
@@ -257,19 +224,16 @@ export function FleetViewer({ vehicles, selectedVehicle, onSelectVehicle, classN
   const handleSelect = onSelectVehicle ?? defaultOnSelectVehicle;
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [webglError, setWebglError] = useState(false);
+  const [webglAvailable, setWebglAvailable] = useState(true);
 
   useEffect(() => {
     setMounted(true);
+    setWebglAvailable(detectWebGL());
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  const handleWebGLError = () => {
-    setWebglError(true);
-  };
 
   if (!mounted) {
     return (
@@ -289,129 +253,136 @@ export function FleetViewer({ vehicles, selectedVehicle, onSelectVehicle, classN
     );
   }
 
-  if (webglError) {
+  if (!webglAvailable) {
     return <FleetViewerFallback vehicles={vehicles} />;
   }
 
   return (
-    <div className={className} style={{ width: '100%', aspectRatio: '16/9', minHeight: '400px' }}>
-      <Canvas
-        camera={{ position: [0, 15, 25], fov: 50 }}
-        gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
-        shadows
-        className="w-full h-full"
-        style={{ touchAction: 'none' }}
-        onCreated={({ gl }) => {
-          gl.getContext().canvas.addEventListener('webglcontextlost', handleWebGLError);
-        }}
-      >
-        <SceneContent vehicles={vehicles} selectedVehicle={selectedVehicle ?? null} onSelectVehicle={onSelectVehicle ?? defaultOnSelectVehicle} isMobile={isMobile} />
-        <LoadingOverlay />
-      </Canvas>
+    <ErrorBoundary
+      fallback={<FleetViewerFallback vehicles={vehicles} />}
+      sectionName="Visor 3D"
+    >
+      <div className={className} style={{ width: '100%', aspectRatio: '16/9', minHeight: '400px' }}>
+        <Canvas
+          camera={{ position: [0, 15, 25], fov: 50 }}
+          gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
+          shadows
+          className="w-full h-full"
+          style={{ touchAction: 'none' }}
+        >
+          <SceneContent
+            vehicles={vehicles}
+            selectedVehicle={selectedVehicle ?? null}
+            onSelectVehicle={handleSelect}
+            isMobile={isMobile}
+          />
+          <LoadingOverlay />
+        </Canvas>
 
-      <AnimatePresence mode="wait">
-        {selectedVehicle && (
-          <motion.div
-            className={`
-              absolute z-[100] 
-              ${isMobile 
-                ? 'bottom-4 left-4 right-4 max-w-[calc(100vw-2rem)]' 
-                : 'bottom-4 right-4 left-4 lg:right-4 lg:left-auto lg:bottom-4 lg:top-4 lg:w-72'
-              }
-            `}
-            initial={{ opacity: 0, x: 300 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 300 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          >
-            <div className="bg-gauge border border-panel radius-card p-4 shadow-modal">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <span className="label-tag">{selectedVehicle.id}</span>
-                  <h4 className="text-h3 text-primary mt-1">{selectedVehicle.model}</h4>
-                </div>
-                <button
-                  onClick={() => handleSelect(null)}
-                  className="p-1 radius-panel hover:bg-panel transition-colors"
-                  aria-label="Cerrar ficha técnica"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="space-y-3 text-small">
-                <div className="grid grid-cols-2 gap-2 text-secondary">
-                  <span>CANTIDAD</span>
-                  <span className="text-primary font-mono text-right">{selectedVehicle.count} unidades</span>
-                  <span>AÑO</span>
-                  <span className="text-primary font-mono text-right">{selectedVehicle.specs.year || 'N/A'}</span>
-                  <span>MOTOR</span>
-                  <span className="text-primary font-mono text-right">{selectedVehicle.specs.engine || 'N/A'}</span>
-                  <span>CAPACIDAD</span>
-                  <span className="text-primary font-mono text-right">{selectedVehicle.specs.capacity || 'N/A'}</span>
-                </div>
-
-                <div className="border-t border-panel/50 pt-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-warn-orange" aria-hidden="true">
-                      <circle cx="12" cy="12" r="10"/>
-                      <polyline points="12 6 12 12 16 14"/>
+        <AnimatePresence mode="wait">
+          {selectedVehicle && (
+            <motion.div
+              className={`
+                absolute z-[100]
+                ${isMobile
+                  ? 'bottom-4 left-4 right-4 max-w-[calc(100vw-2rem)]'
+                  : 'bottom-4 right-4 left-4 lg:right-4 lg:left-auto lg:bottom-4 lg:top-4 lg:w-72'
+                }
+              `}
+              initial={{ opacity: 0, x: 300 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 300 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            >
+              <div className="bg-gauge border border-panel radius-card p-4 shadow-modal">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <span className="label-tag">{selectedVehicle.id}</span>
+                    <h4 className="text-h3 text-primary mt-1">{selectedVehicle.model}</h4>
+                  </div>
+                  <button
+                    onClick={() => handleSelect(null)}
+                    className="p-1 radius-panel hover:bg-panel transition-colors"
+                    aria-label="Cerrar ficha técnica"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
-                    <span className="text-muted font-mono">MANTENIMIENTO</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-secondary text-xs">
-                    <span>ÚLTIMO</span>
-                    <span className="text-primary font-mono text-right">{selectedVehicle.specs.lastMaintenance || 'N/A'}</span>
-                    <span>PRÓXIMO</span>
-                    <span className="text-primary font-mono text-right">{selectedVehicle.specs.nextInspection || 'N/A'}</span>
-                  </div>
+                  </button>
                 </div>
 
-                {selectedVehicle.specs.operator && (
+                <div className="space-y-3 text-small">
+                  <div className="grid grid-cols-2 gap-2 text-secondary">
+                    <span>CANTIDAD</span>
+                    <span className="text-primary font-mono text-right">{selectedVehicle.count} unidades</span>
+                    <span>AÑO</span>
+                    <span className="text-primary font-mono text-right">{selectedVehicle.specs.year || 'N/A'}</span>
+                    <span>MOTOR</span>
+                    <span className="text-primary font-mono text-right">{selectedVehicle.specs.engine || 'N/A'}</span>
+                    <span>CAPACIDAD</span>
+                    <span className="text-primary font-mono text-right">{selectedVehicle.specs.capacity || 'N/A'}</span>
+                  </div>
+
                   <div className="border-t border-panel/50 pt-3">
                     <div className="flex items-center gap-2 mb-2">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-pipe-blue" aria-hidden="true">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-warn-orange" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
                       </svg>
-                      <span className="text-muted font-mono">OPERADOR ASIGNADO</span>
+                      <span className="text-muted font-mono">MANTENIMIENTO</span>
                     </div>
-                    <span className="text-primary">{selectedVehicle.specs.operator}</span>
+                    <div className="grid grid-cols-2 gap-2 text-secondary text-xs">
+                      <span>ÚLTIMO</span>
+                      <span className="text-primary font-mono text-right">{selectedVehicle.specs.lastMaintenance || 'N/A'}</span>
+                      <span>PRÓXIMO</span>
+                      <span className="text-primary font-mono text-right">{selectedVehicle.specs.nextInspection || 'N/A'}</span>
+                    </div>
                   </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      <div className={`
-        absolute z-[50]
-        ${isMobile
-          ? 'bottom-20 left-4 right-4 max-w-[calc(100vw-2rem)]'
-          : 'bottom-4 left-4 right-4 lg:bottom-4 lg:left-4 lg:right-auto lg:w-64'
-        }
-      `}>
-        <div className="bg-gauge/90 backdrop-blur border border-panel/50 radius-card p-3 text-micro text-secondary font-mono">
-          <div className="flex items-center gap-2 mb-2 text-primary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            CONTROLES
-          </div>
-          <div className="space-y-1 text-secondary/80">
-            <div className="flex justify-between"><kbd className="bg-panel border border-panel/50 radius-panel px-1.5 py-0.5">Click + Arrastrar</kbd><span>Rotar cámara</span></div>
-            <div className="flex justify-between"><kbd className="bg-panel border border-panel/50 radius-panel px-1.5 py-0.5">Scroll</kbd><span>Zoom</span></div>
-            <div className="flex justify-between"><kbd className="bg-panel border border-panel/50 radius-panel px-1.5 py-0.5">Shift + Click</kbd><span>Pan</span></div>
-            <div className="flex justify-between"><kbd className="bg-panel border border-panel/50 radius-panel px-1.5 py-0.5">Click Vehículo</kbd><span>Ficha técnica</span></div>
+                  {selectedVehicle.specs.operator && (
+                    <div className="border-t border-panel/50 pt-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-pipe-blue" aria-hidden="true">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                          <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span className="text-muted font-mono">OPERADOR ASIGNADO</span>
+                      </div>
+                      <span className="text-primary">{selectedVehicle.specs.operator}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className={`
+          absolute z-[50]
+          ${isMobile
+            ? 'bottom-20 left-4 right-4 max-w-[calc(100vw-2rem)]'
+            : 'bottom-4 left-4 right-4 lg:bottom-4 lg:left-4 lg:right-auto lg:w-64'
+          }
+        `}>
+          <div className="bg-gauge/90 backdrop-blur border border-panel/50 radius-card p-3 text-micro text-secondary font-mono">
+            <div className="flex items-center gap-2 mb-2 text-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              CONTROLES
+            </div>
+            <div className="space-y-1 text-secondary/80">
+              <div className="flex justify-between"><kbd className="bg-panel border border-panel/50 radius-panel px-1.5 py-0.5">Click + Arrastrar</kbd><span>Rotar cámara</span></div>
+              <div className="flex justify-between"><kbd className="bg-panel border border-panel/50 radius-panel px-1.5 py-0.5">Scroll</kbd><span>Zoom</span></div>
+              <div className="flex justify-between"><kbd className="bg-panel border border-panel/50 radius-panel px-1.5 py-0.5">Shift + Click</kbd><span>Pan</span></div>
+              <div className="flex justify-between"><kbd className="bg-panel border border-panel/50 radius-panel px-1.5 py-0.5">Click Vehículo</kbd><span>Ficha técnica</span></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 
@@ -420,7 +391,7 @@ export function FleetViewerFallback({ vehicles }: { vehicles: FleetVehicle[] }) 
     <div className="bg-gauge border border-panel radius-card overflow-hidden">
       <div className="p-4 border-b border-panel/50 flex items-center justify-between">
         <h3 className="text-h3 text-primary">INVENTARIO TÉCNICO 3D</h3>
-        <Badge variant="default" size="sm">WEBGL NO DISPONIBLE</Badge>
+        <Badge variant="default" size="sm">MODO TABLA</Badge>
       </div>
       <div className="p-4 overflow-x-auto">
         <table className="w-full text-small">

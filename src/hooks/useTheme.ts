@@ -6,8 +6,10 @@ const THEME_KEY = 'cicmelinst-theme';
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(THEME_KEY) as Theme | null;
-      if (stored) return stored;
+      try {
+        const stored = localStorage.getItem(THEME_KEY) as Theme | null;
+        if (stored) return stored;
+      } catch { /* localStorage unavailable */ }
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
     return 'dark';
@@ -17,16 +19,20 @@ export function useTheme() {
 
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem(THEME_KEY) as Theme | null;
-    if (stored) {
-      setTheme(stored);
-    }
+    try {
+      const stored = localStorage.getItem(THEME_KEY) as Theme | null;
+      if (stored) {
+        setTheme(stored);
+      }
+    } catch { /* localStorage unavailable */ }
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem(THEME_KEY, theme);
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch { /* localStorage unavailable */ }
 
     // Apply SCADA mode specific classes
     document.documentElement.classList.toggle('scada-mode', theme === 'scada');
