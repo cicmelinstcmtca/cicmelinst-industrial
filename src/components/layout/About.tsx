@@ -118,12 +118,15 @@ function LifeTimeline() {
     if (!el) return;
     const getActiveIndex = () => {
       const cards = el.querySelectorAll<HTMLElement>('[data-timeline-card]');
-      const scrollCenter = el.scrollLeft + el.clientWidth / 2;
+      if (!cards.length) return 0;
+      const elRect = el.getBoundingClientRect();
+      const viewCenter = elRect.left + elRect.width / 2;
       let closest = 0;
       let minDist = Infinity;
       cards.forEach((card, i) => {
-        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-        const dist = Math.abs(scrollCenter - cardCenter);
+        const cardRect = card.getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        const dist = Math.abs(viewCenter - cardCenter);
         if (dist < minDist) { minDist = dist; closest = i; }
       });
       return closest;
@@ -140,7 +143,10 @@ function LifeTimeline() {
     const clamped = Math.min(Math.max(index, 0), timeline.length - 1);
     const card = el.querySelectorAll<HTMLElement>('[data-timeline-card]')[clamped];
     if (card) {
-      el.scrollTo({ left: card.offsetLeft - (el.clientWidth - card.offsetWidth) / 2, behavior: 'smooth' });
+      const elRect = el.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const offset = cardRect.left - elRect.left - (elRect.width - cardRect.width) / 2;
+      el.scrollTo({ left: el.scrollLeft + offset, behavior: 'smooth' });
     }
   };
 
