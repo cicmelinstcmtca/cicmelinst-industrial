@@ -1,6 +1,5 @@
 import { motion } from 'motion/react';
-import { SingleLineDiagram, DEFAULT_SUBSTATION_LAYOUT } from '../ui';
-import { Button } from '../ui';
+import { SingleLineDiagram, DEFAULT_SUBSTATION_LAYOUT, Button } from '../ui';
 import { useCompany } from '../../hooks';
 
 interface HeroProps {

@@ -1,39 +1,5 @@
 # CICMELINST - Cloudflare Pages Configuration
-# wrangler.toml para Cloudflare Pages + Workers
 
 name = "cicmelinst-industrial"
 compatibility_date = "2024-08-24"
 pages_build_output_dir = "dist"
-
-[build]
-  command = "npm run build"
-  destination = "dist"
-
-[env.production]
-  # Variables de entorno de producción
-  NODE_ENV = "production"
-
-[[kv_namespaces]]
-  binding = "WORK_ORDERS"
-  id = "your-kv-namespace-id"
-  preview_id = "your-preview-kv-namespace-id"
-
-[[d1_databases]]
-  binding = "DB"
-  database_name = "cicmelinst-db"
-  database_id = "your-database-id"
-
-# Headers via _headers file (auto-detectado)
-# Redirects via _redirects file (auto-detectado)
-
-# Configuración de compresión
-[compression]
-  brotli = true
-  gzip = true
-
-# Configuración de caché
-[cache]
-  # Cache HTML por 0 segundos (siempre revalidar)
-  html_ttl = 0
-  # Cache assets por 1 año
-  asset_ttl = 31536000

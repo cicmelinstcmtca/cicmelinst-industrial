@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTheme } from '../../hooks';
-import { useCompany } from '../../hooks';
+import { useTheme, useCompany } from '../../hooks';
 
 interface HeaderProps {
   onSectionNavigate?: (section: string) => void;
