@@ -58,7 +58,7 @@ export function Header({ onSectionNavigate }: HeaderProps) {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
-  const themeLabel = isDark ? 'Modo claro' : isLight ? 'Modo SCADA' : 'Modo oscuro';
+  const themeLabel = isDark ? 'Modo claro' : isLight ? 'Modo terminal' : 'Modo oscuro';
 
   return (
     <>

@@ -65,7 +65,7 @@ export function LazyLoad({ children, fallback }: LazyLoadProps) {
           aria-label="Cargando componente..."
         >
           <svg
-            className="animate-spin text-warn-orange"
+            className="animate-spin text-[var(--color-warn-orange)]"
             width="32"
             height="32"
             viewBox="0 0 24 24"
@@ -77,7 +77,7 @@ export function LazyLoad({ children, fallback }: LazyLoadProps) {
             <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
             <path d="M12 2a10 10 0 0 1 10 10" strokeOpacity="0.75" />
           </svg>
-          <span className="text-micro text-muted font-mono">CARGANDO MÓDULO...</span>
+          <span className="text-[10px] text-[var(--color-text-muted)] font-mono">CARGANDO MÓDULO...</span>
         </motion.div>
       )}>
         {children}
@@ -91,10 +91,6 @@ function createLazyComponent<T extends ComponentType<any>>(
 ) {
   return lazy(importFn);
 }
-
-export const LazyFleet = createLazyComponent(
-  () => import('../components/layout/Fleet').then(m => ({ default: m.Fleet }))
-);
 
 export const LazyProjects = createLazyComponent(
   () => import('../components/layout/Projects').then(m => ({ default: m.Projects }))

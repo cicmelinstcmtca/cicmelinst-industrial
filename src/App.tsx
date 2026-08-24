@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Header, Footer, Hero, About } from './components/layout';
-import { useTheme } from './hooks';
+import { useTheme, useCompany } from './hooks';
 import { generateWorkOrderNumber } from './utils/helpers';
 import { LazyLoad, LazyProjects, LazyCapabilities, LazyTeam, LazyContact } from './components/LazyLoad';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -20,6 +20,7 @@ type SectionId = typeof SECTIONS[number]['id'];
 
 function AppContent() {
   const { theme, mounted } = useTheme();
+  const company = useCompany();
   const [woNumber] = useState(() => generateWorkOrderNumber());
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -80,7 +81,7 @@ function AppContent() {
           <About />
         </ErrorBoundary>
 
-        <div id="clients">
+        <div>
           <MarqueeSection />
         </div>
 
@@ -101,7 +102,7 @@ function AppContent() {
 
       {/* WhatsApp Floating Button */}
       <motion.a
-        href="https://wa.me/584120000000?text=Hola%2C%20me%20interesa%20un%20presupuesto%20de%20sus%20servicios."
+        href={`https://wa.me/${company.whatsapp}?text=Hola%2C%20me%20interesa%20un%20presupuesto%20de%20sus%20servicios.`}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-40 group"

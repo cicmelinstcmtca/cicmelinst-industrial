@@ -1,13 +1,30 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { useCompany } from '../../hooks';
+
+interface FormData {
+  name: string;
+  company: string;
+  email: string;
+  phone: string;
+  service: string;
+  message: string;
+}
+
+const INITIAL_FORM: FormData = { name: '', company: '', email: '', phone: '', service: '', message: '' };
 
 export function Contact() {
   const company = useCompany();
   const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState<FormData>(INITIAL_FORM);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const updateField = (field: keyof FormData, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Form submitted:', form);
     setSubmitted(true);
   };
 
@@ -85,6 +102,8 @@ export function Contact() {
                       type="text"
                       required
                       placeholder="Su nombre completo"
+                      value={form.name}
+                      onChange={(e) => updateField('name', e.target.value)}
                       className="w-full px-4 py-3 bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] rounded-lg text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-warn-orange)] transition-colors"
                     />
                   </div>
@@ -93,6 +112,8 @@ export function Contact() {
                     <input
                       type="text"
                       placeholder="Nombre de la empresa"
+                      value={form.company}
+                      onChange={(e) => updateField('company', e.target.value)}
                       className="w-full px-4 py-3 bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] rounded-lg text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-warn-orange)] transition-colors"
                     />
                   </div>
@@ -105,6 +126,8 @@ export function Contact() {
                       type="email"
                       required
                       placeholder="correo@empresa.com"
+                      value={form.email}
+                      onChange={(e) => updateField('email', e.target.value)}
                       className="w-full px-4 py-3 bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] rounded-lg text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-warn-orange)] transition-colors"
                     />
                   </div>
@@ -114,6 +137,8 @@ export function Contact() {
                       type="tel"
                       required
                       placeholder="+58 412 000 0000"
+                      value={form.phone}
+                      onChange={(e) => updateField('phone', e.target.value)}
                       className="w-full px-4 py-3 bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] rounded-lg text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-warn-orange)] transition-colors"
                     />
                   </div>
@@ -123,6 +148,8 @@ export function Contact() {
                   <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">Tipo de Servicio *</label>
                   <select
                     required
+                    value={form.service}
+                    onChange={(e) => updateField('service', e.target.value)}
                     className="w-full px-4 py-3 bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] rounded-lg text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-warn-orange)] transition-colors appearance-none"
                   >
                     <option value="">Seleccione un servicio</option>
@@ -141,6 +168,8 @@ export function Contact() {
                     required
                     rows={5}
                     placeholder="Describa el alcance del proyecto, ubicación, y cualquier requerimiento técnico especial..."
+                    value={form.message}
+                    onChange={(e) => updateField('message', e.target.value)}
                     className="w-full px-4 py-3 bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] rounded-lg text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-warn-orange)] transition-colors resize-none"
                   />
                 </div>
@@ -163,7 +192,7 @@ export function Contact() {
                   ¿Prefiere contacto inmediato?
                 </p>
                 <a
-                  href="https://wa.me/584120000000?text=Hola%2C%20me%20interesa%20un%20presupuesto%20de%20sus%20servicios."
+                  href={`https://wa.me/${company.whatsapp}?text=Hola%2C%20me%20interesa%20un%20presupuesto%20de%20sus%20servicios.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-3 w-full px-6 py-3.5 bg-[#25D366] text-white font-semibold rounded-lg hover:bg-[#20BD5A] hover:shadow-lg hover:shadow-[#25D366]/30 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200"
@@ -263,7 +292,7 @@ export function Contact() {
                   <p className="text-xs text-[var(--color-text-secondary)]">
                     Para situaciones de riesgo inmediato o parada de planta:
                   </p>
-                  <a href={`tel:${company.whatsapp}`} className="text-sm font-mono font-bold text-[var(--color-warn-orange)] hover:underline">
+                  <a href={`tel:${company.phone.replace(/[\s-]/g, '')}`} className="text-sm font-mono font-bold text-[var(--color-warn-orange)] hover:underline">
                     {company.phoneDisplay}
                   </a>
                 </div>

@@ -66,7 +66,7 @@ export function Footer() {
               </a>
               <div className="text-xs text-[var(--color-text-muted)] whitespace-pre-line mt-2">{company.schedule}</div>
               <a
-                href="https://wa.me/584120000000?text=Hola%2C%20me%20interesa%20un%20presupuesto%20de%20sus%20servicios."
+                href={`https://wa.me/${company.whatsapp}?text=Hola%2C%20me%20interesa%20un%20presupuesto%20de%20sus%20servicios.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full mt-3 px-4 py-2.5 bg-[#25D366]/10 text-[#25D366] text-sm font-medium rounded-lg border border-[#25D366]/20 hover:bg-[#25D366] hover:text-white hover:border-[#25D366] transition-all duration-200"

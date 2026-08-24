@@ -91,8 +91,8 @@ export function Marquee({ speed = 50, paused = false, className = '', gap = 48 }
       </div>
 
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-control via-control/50 to-transparent" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-control via-control/50 to-transparent" />
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--color-bg-control)] via-[var(--color-bg-control)]/50 to-transparent" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--color-bg-control)] via-[var(--color-bg-control)]/50 to-transparent" />
       </div>
     </div>
   );
@@ -100,11 +100,11 @@ export function Marquee({ speed = 50, paused = false, className = '', gap = 48 }
 
 export function MarqueeSection() {
   return (
-    <section id="clients" className="bg-control border-y border-panel/50 py-8 lg:py-12" aria-labelledby="marquee-title">
-      <div className="container-main">
+    <section id="clients" className="bg-[var(--color-bg-control)] border-y border-[var(--color-border-panel)]/50 py-8 lg:py-12" aria-labelledby="marquee-title">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <span className="label-tag text-warn-orange mb-4 block" id="marquee-title">CLIENTES Y SOCIOS</span>
-          <p className="text-micro text-muted font-mono">{clientsTagline}</p>
+          <span className="text-[10px] font-mono text-[var(--color-warn-orange)] uppercase tracking-widest mb-4 block" id="marquee-title">CLIENTES Y SOCIOS</span>
+          <p className="text-[10px] text-[var(--color-text-muted)] font-mono">{clientsTagline}</p>
         </div>
         <Marquee speed={40} gap={64} />
       </div>
