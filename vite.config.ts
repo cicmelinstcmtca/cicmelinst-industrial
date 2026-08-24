@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   optimizeDeps: {
-    include: ['three', '@react-three/fiber', '@react-three/drei', 'gsap', 'motion'],
+    include: ['three', '@react-three/fiber', '@react-three/drei', 'motion'],
   },
   build: {
     target: 'es2020',
@@ -15,23 +15,14 @@ export default defineConfig({
       output: {
         manualChunks: (id: string) => {
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-hook-form')) {
+            if (id.includes('react') || id.includes('react-dom')) {
               return 'vendor-react';
-            }
-            if (id.includes('react-router')) {
-              return 'vendor-router';
             }
             if (id.includes('three') || id.includes('@react-three')) {
               return 'vendor-three';
             }
-            if (id.includes('motion') || id.includes('gsap')) {
+            if (id.includes('motion')) {
               return 'vendor-animation';
-            }
-            if (id.includes('zod') || id.includes('@hookform')) {
-              return 'vendor-ui';
-            }
-            if (id.includes('clsx') || id.includes('tailwind-merge')) {
-              return 'vendor-utils';
             }
             return 'vendor-other';
           }

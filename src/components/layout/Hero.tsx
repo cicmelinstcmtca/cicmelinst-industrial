@@ -24,15 +24,20 @@ const STATS = [
 export function Hero({ onSectionNavigate }: HeroProps) {
   const company = useCompany();
   const [currentImage, setCurrentImage] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const prefersReducedMotion = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const nextImage = useCallback(() => {
     setCurrentImage((prev) => (prev + 1) % HERO_IMAGES.length);
   }, []);
 
   useEffect(() => {
+    if (isPaused || prefersReducedMotion) return;
     const timer = setInterval(nextImage, 5000);
     return () => clearInterval(timer);
-  }, [nextImage]);
+  }, [nextImage, isPaused, prefersReducedMotion]);
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
@@ -161,7 +166,18 @@ export function Hero({ onSectionNavigate }: HeroProps) {
       </div>
 
       {/* Image Indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 z-10">
+        <button
+          onClick={() => setIsPaused(!isPaused)}
+          className="p-1.5 rounded-full bg-[var(--color-bg-control)]/50 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors backdrop-blur-sm"
+          aria-label={isPaused ? 'Reproducir carrusel' : 'Pausar carrusel'}
+        >
+          {isPaused ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+          )}
+        </button>
         {HERO_IMAGES.map((_, i) => (
           <button
             key={i}

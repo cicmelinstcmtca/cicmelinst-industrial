@@ -33,7 +33,7 @@
   /* Texto */
   --color-text-primary: #E8ECEF;
   --color-text-secondary: #9AA3AC;
-  --color-text-muted: #5A6A7A;
+  --color-text-muted: #7A8A9A;
   --color-text-mono: #00FF88;
 
   /* Modo Día (Light) */
@@ -44,7 +44,7 @@
   --color-grid-line-l: #E0E4EB;
   --color-text-primary-l: #1A1F2E;
   --color-text-secondary-l: #4A5568;
-  --color-text-muted-l: #718096;
+  --color-text-muted-l: #5A6A7A;
 
   /* ---- TYPOGRAPHY ---- */
   --font-family-display: "Space Grotesk", "IBM Plex Sans", system-ui, sans-serif;
