@@ -26,18 +26,15 @@ export function Hero({ onSectionNavigate }: HeroProps) {
   const [currentImage, setCurrentImage] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  const prefersReducedMotion = typeof window !== 'undefined'
-    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   const nextImage = useCallback(() => {
     setCurrentImage((prev) => (prev + 1) % HERO_IMAGES.length);
   }, []);
 
   useEffect(() => {
-    if (isPaused || prefersReducedMotion) return;
+    if (isPaused) return;
     const timer = setInterval(nextImage, 5000);
     return () => clearInterval(timer);
-  }, [nextImage, isPaused, prefersReducedMotion]);
+  }, [nextImage, isPaused]);
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">

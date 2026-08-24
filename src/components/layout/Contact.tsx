@@ -237,6 +237,23 @@ export function Contact() {
 
             <div className="bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] rounded-xl p-5">
               <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-lg bg-[var(--color-pipe-blue)]/10 flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-pipe-blue)" strokeWidth="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22,6 12,13 2,6" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--color-text-muted)] font-mono uppercase">Correo</div>
+                  <a href={`mailto:${company.email}`} className="text-sm text-[var(--color-text-primary)] font-medium hover:text-[var(--color-pipe-blue)] transition-colors">
+                    {company.email}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] rounded-xl p-5">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-lg bg-[var(--color-warn-orange)]/10 flex items-center justify-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-warn-orange)" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />
