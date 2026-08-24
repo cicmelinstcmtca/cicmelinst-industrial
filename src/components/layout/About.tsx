@@ -109,15 +109,18 @@ function LifeTimeline() {
   const { timeline } = useCompany();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useRef(0);
+  const scrollStartX = useRef(0);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
     const onScroll = () => {
       const scrollLeft = el.scrollLeft;
-      const cardWidth = 320;
+      const cardWidth = 340;
       const index = Math.round(scrollLeft / cardWidth);
-      setActiveIndex(Math.min(index, timeline.length - 1));
+      setActiveIndex(Math.min(Math.max(index, 0), timeline.length - 1));
     };
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
@@ -126,14 +129,33 @@ function LifeTimeline() {
   const scrollTo = (index: number) => {
     const el = scrollRef.current;
     if (!el) return;
-    el.scrollTo({ left: index * 320, behavior: 'smooth' });
+    const clamped = Math.min(Math.max(index, 0), timeline.length - 1);
+    el.scrollTo({ left: clamped * 340, behavior: 'smooth' });
   };
+
+  const goPrev = () => scrollTo(activeIndex - 1);
+  const goNext = () => scrollTo(activeIndex + 1);
+
+  // Drag-to-scroll handlers
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === 'touch') return;
+    setIsDragging(true);
+    dragStartX.current = e.clientX;
+    scrollStartX.current = scrollRef.current?.scrollLeft ?? 0;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX.current;
+    if (scrollRef.current) scrollRef.current.scrollLeft = scrollStartX.current - dx;
+  };
+  const onPointerUp = () => setIsDragging(false);
 
   return (
     <section className="py-20 lg:py-32 bg-[var(--color-bg-panel)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex items-end justify-between mb-12">
+        <div className="flex items-end justify-between mb-8">
           <div>
             <motion.span
               initial={{ opacity: 0, y: 10 }}
@@ -155,6 +177,29 @@ function LifeTimeline() {
             </motion.h2>
           </div>
 
+          {/* Nav Arrows */}
+          <div className="hidden sm:flex items-center gap-2">
+            <button
+              onClick={goPrev}
+              disabled={activeIndex === 0}
+              className="p-2.5 rounded-xl border border-[var(--color-border-panel)] bg-[var(--color-bg-control)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-warn-orange)] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              aria-label="Año anterior"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span className="text-sm font-mono text-[var(--color-text-muted)] min-w-[60px] text-center">
+              {activeIndex + 1} / {timeline.length}
+            </span>
+            <button
+              onClick={goNext}
+              disabled={activeIndex === timeline.length - 1}
+              className="p-2.5 rounded-xl border border-[var(--color-border-panel)] bg-[var(--color-bg-control)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-warn-orange)] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              aria-label="Siguiente año"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+
           {/* Year Counter */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -169,22 +214,24 @@ function LifeTimeline() {
           </motion.div>
         </div>
 
-        {/* Progress bar */}
-        <div className="mb-8">
-          <div className="h-1 bg-[var(--color-bg-control)] rounded-full overflow-hidden">
+        {/* Progress bar with clickable years */}
+        <div className="mb-6">
+          <div className="h-1.5 bg-[var(--color-bg-control)] rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-gradient-to-r from-[var(--color-warn-orange)] to-[var(--color-warn-orange-glow)]"
               animate={{ width: `${((activeIndex + 1) / timeline.length) * 100}%` }}
               transition={{ duration: 0.3 }}
             />
           </div>
-          <div className="flex justify-between mt-2">
+          <div className="flex justify-between mt-3">
             {timeline.map((item, i) => (
               <button
                 key={i}
                 onClick={() => scrollTo(i)}
-                className={`text-xs font-mono transition-colors ${
-                  i === activeIndex ? 'text-[var(--color-warn-orange)]' : 'text-[var(--color-text-muted)]'
+                className={`text-xs font-mono px-2 py-1 rounded transition-all ${
+                  i === activeIndex
+                    ? 'text-[var(--color-warn-orange)] bg-[var(--color-warn-orange)]/10 font-bold'
+                    : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'
                 }`}
               >
                 {item.year}
@@ -193,11 +240,15 @@ function LifeTimeline() {
           </div>
         </div>
 
-        {/* Horizontal Scroll */}
+        {/* Horizontal Scroll with drag */}
         <div
           ref={scrollRef}
-          className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          className="flex gap-5 overflow-x-auto pb-4 snap-x snap-proximity cursor-grab active:cursor-grabbing"
+          style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--color-warn-orange) var(--color-bg-control)' }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerLeave={onPointerUp}
         >
           {timeline.map((item, i) => (
             <motion.div
@@ -206,9 +257,10 @@ function LifeTimeline() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className={`flex-shrink-0 w-[300px] snap-center p-6 rounded-2xl border transition-all duration-300 ${
+              onClick={() => scrollTo(i)}
+              className={`flex-shrink-0 w-[300px] snap-center p-6 rounded-2xl border transition-all duration-300 select-none ${
                 i === activeIndex
-                  ? 'bg-[var(--color-bg-control)] border-[var(--color-warn-orange)]/50 shadow-lg shadow-[var(--color-warn-orange)]/10'
+                  ? 'bg-[var(--color-bg-control)] border-[var(--color-warn-orange)]/50 shadow-lg shadow-[var(--color-warn-orange)]/10 scale-[1.02]'
                   : 'bg-[var(--color-bg-control)]/50 border-[var(--color-border-panel)] hover:border-[var(--color-border-panel)]'
               }`}
             >
@@ -230,6 +282,17 @@ function LifeTimeline() {
               </p>
             </motion.div>
           ))}
+        </div>
+
+        {/* Mobile nav */}
+        <div className="flex sm:hidden items-center justify-center gap-4 mt-6">
+          <button onClick={goPrev} disabled={activeIndex === 0} className="p-2 rounded-lg border border-[var(--color-border-panel)] bg-[var(--color-bg-control)] text-[var(--color-text-muted)] disabled:opacity-30 transition-all">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <span className="text-sm font-mono text-[var(--color-text-muted)]">{activeIndex + 1} / {timeline.length}</span>
+          <button onClick={goNext} disabled={activeIndex === timeline.length - 1} className="p-2 rounded-lg border border-[var(--color-border-panel)] bg-[var(--color-bg-control)] text-[var(--color-text-muted)] disabled:opacity-30 transition-all">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
         </div>
       </div>
     </section>
