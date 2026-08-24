@@ -1,134 +1,103 @@
-import { Badge } from '../ui';
-import { useCompany, useCertifications } from '../../hooks';
+import { useCompany, useCertifications, useClients } from '../../hooks';
+import type { Certification, Client } from '../../data/types';
 
 export function Footer() {
-  const { name, tagline, phoneDisplay, whatsapp, schedule, social, foundationYear, email } = useCompany();
+  const company = useCompany();
   const certifications = useCertifications();
-  const currentYear = new Date().getFullYear();
+  const clients = useClients();
 
   return (
-    <footer className="bg-control border-t border-panel/50 relative overflow-hidden" role="contentinfo">
-      <div className="absolute inset-0 grid-pattern opacity-20 pointer-events-none" aria-hidden="true" />
-
-      <div className="container-main relative">
-        <div className="py-8 lg:py-12">
-          <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8 mb-8">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 radius-panel bg-warn-orange flex items-center justify-center font-display font-bold text-2xl text-bg-control">
-                C
-              </div>
+    <footer className="bg-[var(--color-bg-panel)] border-t border-[var(--color-border-panel)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+          {/* Brand */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center gap-3 mb-4">
+              <img src="/logo.png" alt={company.name} className="h-10 w-auto" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
               <div>
-                <div className="text-title text-primary font-bold tracking-tight">{name}</div>
-                <div className="text-micro text-muted font-mono">{tagline}</div>
-                <div className="text-micro text-muted font-mono">RIF: J-40063361-3</div>
+                <div className="text-sm font-bold text-[var(--color-text-primary)]" style={{ fontFamily: 'var(--font-family-display)' }}>{company.name}</div>
+                <div className="text-[10px] text-[var(--color-text-muted)] font-mono uppercase tracking-widest">Ingeniería Industrial</div>
               </div>
             </div>
+            <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-4">
+              Soluciones integrales de ingeniería, construcción, montaje y mantenimiento industrial.
+            </p>
+            <div className="flex gap-3">
+              {company.social.linkedin && (
+                <a href={company.social.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-[var(--color-bg-control)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-gauge)] transition-colors" aria-label="LinkedIn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
+              )}
+              {company.social.instagram && (
+                <a href={company.social.instagram} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-[var(--color-bg-control)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-gauge)] transition-colors" aria-label="Instagram">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" /></svg>
+                </a>
+              )}
+            </div>
+          </div>
 
-            <div className="flex flex-wrap items-center gap-4 text-micro text-muted font-mono">
-              {certifications.map((cert, i) => (
-                <Badge key={i} variant="default" className="bg-insul-green/20 text-insul-green border-insul-green/30">
+          {/* Services */}
+          <div>
+            <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4 uppercase tracking-wider" style={{ fontFamily: 'var(--font-family-display)' }}>Servicios</h4>
+            <ul className="space-y-2">
+              {['Montaje Eléctrico', 'Automatización', 'Construcción Civil', 'Instrumentación'].map((s) => (
+                <li key={s}>
+                  <span className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer">{s}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4 uppercase tracking-wider" style={{ fontFamily: 'var(--font-family-display)' }}>Contacto</h4>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)]">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                {company.address}
+              </li>
+              <li className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                {company.phone}
+              </li>
+              <li className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                {company.email}
+              </li>
+              <li className="text-xs text-[var(--color-text-muted)] whitespace-pre-line">{company.schedule}</li>
+            </ul>
+          </div>
+
+          {/* Certifications */}
+          <div>
+            <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4 uppercase tracking-wider" style={{ fontFamily: 'var(--font-family-display)' }}>Certificaciones</h4>
+            <ul className="space-y-2">
+              {certifications.map((cert: Certification) => (
+                <li key={cert.name} className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-insul-green)" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                   {cert.name}
-                </Badge>
+                </li>
+              ))}
+            </ul>
+
+            <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3 mt-6 uppercase tracking-wider" style={{ fontFamily: 'var(--font-family-display)' }}>Clientes</h4>
+            <div className="flex flex-wrap gap-2">
+              {clients.slice(0, 4).map((c: Client) => (
+                <span key={c.name} className="text-[10px] font-mono px-2 py-1 rounded bg-[var(--color-bg-control)] text-[var(--color-text-muted)] border border-[var(--color-border-panel)]">
+                  {c.name}
+                </span>
               ))}
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div>
-              <h4 className="text-micro text-muted font-mono uppercase tracking-wider mb-3">UBICACIONES</h4>
-              <address className="not-italic text-small text-secondary space-y-2 leading-relaxed">
-                <div className="flex items-start gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 mt-0.5 text-muted" aria-hidden="true">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                  </svg>
-                  <span>San José de Guanipa, Edo. Anzoátegui</span>
-                </div>
-                <div className="flex items-start gap-2 ml-6">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 mt-0.5 text-muted" aria-hidden="true">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                  </svg>
-                  <span>Pariaguán, Edo. Anzoátegui</span>
-                </div>
-                <div className="flex items-start gap-2 ml-6 opacity-70">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 mt-0.5 text-muted" aria-hidden="true">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                  </svg>
-                  <span>Lechería (Próximamente)</span>
-                </div>
-              </address>
-            </div>
-
-            <div>
-              <h4 className="text-micro text-muted font-mono uppercase tracking-wider mb-3">CONTACTO</h4>
-              <div className="space-y-2 text-small text-secondary">
-                <a href={`tel:${whatsapp}`} className="flex items-center gap-2 hover:text-primary transition-colors">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                  </svg>
-                  <span>{phoneDisplay}</span>
-                </a>
-                <a href={`mailto:${email}`} className="flex items-center gap-2 hover:text-primary transition-colors">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                    <rect x="2" y="4" width="20" height="16" rx="2"/>
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                  </svg>
-                  <span>{email}</span>
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-micro text-muted font-mono uppercase tracking-wider mb-3">HORARIO DE OPERACIÓN</h4>
-              <div className="space-y-2 text-small text-secondary font-mono">
-                {schedule.split('\n').map((line, i) => (
-                  <div key={i} className="flex justify-between">
-                    <span>{line.split(':')[0]}</span>
-                    <span className="text-primary">{line.split(':').slice(1).join(':')}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-micro text-muted font-mono uppercase tracking-wider mb-3">SISTEMA</h4>
-              <div className="space-y-2 text-small text-secondary font-mono">
-                <div className="flex justify-between">
-                  <span>Versión</span>
-                  <span className="text-primary">v2.6.1</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Fundada</span>
-                  <span className="text-primary">{foundationYear}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Uptime</span>
-                  <span className="text-insul-green">99.97%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-6 border-t border-panel/50 flex flex-col lg:flex-row items-center justify-between gap-4">
-            <p className="text-micro text-muted font-mono">
-              © {currentYear} {name} — Todos los derechos reservados
-            </p>
-
-            <div className="flex items-center gap-6 text-micro text-muted font-mono">
-              <a href={social.linkedin} className="hover:text-primary transition-colors" target="_blank" rel="noopener">LinkedIn</a>
-              <a href={social.instagram} className="hover:text-primary transition-colors" target="_blank" rel="noopener">Instagram</a>
-              <a href={social.youtube} className="hover:text-primary transition-colors" target="_blank" rel="noopener">YouTube</a>
-            </div>
-
-            <div className="flex items-center gap-2 text-micro text-muted font-mono">
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-insul-green animate-pulse" aria-hidden="true" />
-                SISTEMA OPERATIVO
-              </span>
-            </div>
-          </div>
+        <div className="mt-12 pt-8 border-t border-[var(--color-border-panel)] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-[var(--color-text-muted)]">
+            © {new Date().getFullYear()} {company.name}. Todos los derechos reservados.
+          </p>
+          <p className="text-xs text-[var(--color-text-muted)]/50 font-mono">
+            Ingeniería que Energiza Venezuela
+          </p>
         </div>
       </div>
     </footer>

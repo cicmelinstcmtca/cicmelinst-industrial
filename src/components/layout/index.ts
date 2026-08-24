@@ -1,6 +1,7 @@
 export { Header } from './Header';
 export { Footer } from './Footer';
 export { Hero } from './Hero';
+export { About } from './About';
 // Heavy components are lazy-loaded via LazyLoad.tsx
 // export { Capabilities } from './Capabilities';
 // export { Projects } from './Projects';

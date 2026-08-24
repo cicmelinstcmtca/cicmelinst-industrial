@@ -1,153 +1,179 @@
-import { motion } from 'motion/react';
-import { SingleLineDiagram, DEFAULT_SUBSTATION_LAYOUT, Button } from '../ui';
-import { useCompany } from '../../hooks';
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface HeroProps {
   onSectionNavigate: (section: string) => void;
 }
 
-export function Hero({ onSectionNavigate }: HeroProps) {
-  const { heroTitle, heroSubtitle, stats } = useCompany();
+const HERO_IMAGES = [
+  '/images/hero-1.jpg',
+  '/images/hero-2.jpg',
+  '/images/hero-3.jpg',
+  '/images/hero-4.jpg',
+  '/images/hero-5.jpg',
+];
 
-  const handleNodeClick = (section: string) => {
-    onSectionNavigate(section);
-  };
+const STATS = [
+  { value: '14+', label: 'Años de Experiencia' },
+  { value: '100+', label: 'Proyectos Ejecutados' },
+  { value: '24', label: 'Vehículos Operativos' },
+  { value: '3', label: 'Bases Operativas' },
+];
+
+export function Hero({ onSectionNavigate }: HeroProps) {
+  const [currentImage, setCurrentImage] = useState(0);
+
+  const nextImage = useCallback(() => {
+    setCurrentImage((prev) => (prev + 1) % HERO_IMAGES.length);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(nextImage, 5000);
+    return () => clearInterval(timer);
+  }, [nextImage]);
 
   return (
-    <section
-      id="hero"
-      className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden bg-control"
-      aria-labelledby="hero-title"
-    >
-      <div className="absolute inset-0 grid-pattern opacity-30 pointer-events-none" aria-hidden="true" />
-      <div className="absolute inset-0 scanlines pointer-events-none" aria-hidden="true" />
-
-      <div className="container-main relative z-10 px-4 py-20 lg:py-0">
-        <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:gap-16 items-center min-h-[600px]">
-          <div className="space-y-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="inline-flex items-center gap-3 px-4 py-2 radius-panel bg-panel/50 border border-panel/50"
-            >
-              <div className="flex items-center gap-1.5 text-insul-green">
-                <span className="w-2 h-2 rounded-full bg-insul-green-glow animate-pulse" aria-hidden="true" />
-                <span className="label-tag">SISTEMA OPERATIVO</span>
-              </div>
-              <span className="text-micro text-muted font-mono">Subestación Principal • 34.5/13.8 kV • 25 MVA</span>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            >
-              <h1 id="hero-title" className="text-display text-primary leading-none tracking-tight">
-                {heroTitle}
-              </h1>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-              className="text-body-lg text-secondary max-w-xl leading-relaxed"
-            >
-              {heroSubtitle}
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
-              className="flex flex-wrap gap-4"
-            >
-              <Button
-                size="lg"
-                onClick={() => onSectionNavigate('capabilities')}
-                aria-label="Navegar a capacidades técnicas"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-                INICIAR INSPECCIÓN TÉCNICA
-              </Button>
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={() => onSectionNavigate('contact')}
-                aria-label="Generar orden de trabajo"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                </svg>
-                GENERAR ORDEN DE TRABAJO
-              </Button>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
-              className="grid grid-cols-2 gap-4 pt-4 border-t border-panel/50"
-            >
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center p-4 bg-gauge/50 radius-panel border border-panel/50">
-                  <div className="text-mono-lg text-primary font-mono font-bold">{stat.value}</div>
-                  <div className="text-micro text-muted font-mono uppercase tracking-wider mt-1">{stat.label}</div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-
+    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
+      {/* Background Images */}
+      <div className="absolute inset-0">
+        <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            key={currentImage}
+            initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-            className="relative"
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 1.2, ease: 'easeInOut' }}
+            className="absolute inset-0"
           >
-            <div className="bg-gauge/30 border border-panel/50 radius-card p-4 lg:p-6 min-h-[500px]">
-              <SingleLineDiagram
-                nodes={DEFAULT_SUBSTATION_LAYOUT as any}
-                onNodeClick={handleNodeClick}
-                className="w-full h-full"
-                showGrid={false}
-              />
+            <img
+              src={HERO_IMAGES[currentImage]}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        </AnimatePresence>
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg-control)]/95 via-[var(--color-bg-control)]/80 to-[var(--color-bg-control)]/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-control)] via-transparent to-transparent" />
+      </div>
 
-              <div className="mt-6 p-4 bg-panel/50 radius-panel border border-panel/50">
-                <div className="flex flex-wrap items-center gap-4 text-micro text-muted font-mono">
-                  <div className="flex items-center gap-2">
-                    <kbd className="bg-gauge border border-panel/50 radius-panel px-2 py-1">Click</kbd>
-                    <span>Navegar a sección</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <kbd className="bg-gauge border border-panel/50 radius-panel px-2 py-1">Hover</kbd>
-                    <span>Lecturas en tiempo real</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-warn-orange">
-                    <span className="w-2 h-2 rounded-full bg-warn-orange animate-pulse" aria-hidden="true" />
-                    <span>Mantenimiento programado</span>
-                  </div>
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-0 w-full">
+        <div className="max-w-2xl">
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-warn-orange)]/10 border border-[var(--color-warn-orange)]/30 mb-6"
+          >
+            <span className="w-2 h-2 rounded-full bg-[var(--color-insul-green)] animate-pulse" />
+            <span className="text-xs font-mono text-[var(--color-warn-orange)] uppercase tracking-wider">
+              Operando en Venezuela desde 2012
+            </span>
+          </motion.div>
+
+          {/* Title */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-[var(--color-text-primary)] leading-[1.05] mb-6"
+            style={{ fontFamily: 'var(--font-family-display)' }}
+          >
+            Ingeniería que{' '}
+            <span className="text-[var(--color-warn-orange)]">Energiza</span>{' '}
+            Venezuela
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-lg sm:text-xl text-[var(--color-text-secondary)] max-w-xl mb-8 leading-relaxed"
+          >
+            Soluciones integrales de ingeniería, construcción, montaje y
+            mantenimiento industrial para los sectores petrolero, petroquímico
+            y energético.
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="flex flex-wrap gap-4 mb-12"
+          >
+            <button
+              onClick={() => onSectionNavigate('projects')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-warn-orange)] text-[var(--color-bg-control)] font-semibold rounded-lg hover:bg-[var(--color-warn-orange-glow)] transition-all hover:shadow-lg hover:shadow-[var(--color-warn-orange)]/20"
+            >
+              Ver Proyectos
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => onSectionNavigate('contact')}
+              className="inline-flex items-center gap-2 px-6 py-3 border border-[var(--color-pipe-blue-glow)] text-[var(--color-pipe-blue-glow)] font-semibold rounded-lg hover:bg-[var(--color-pipe-blue-glow)] hover:text-[var(--color-bg-control)] transition-all"
+            >
+              Solicitar Cotización
+            </button>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+          >
+            {STATS.map((stat, i) => (
+              <div key={i} className="text-center sm:text-left">
+                <div className="text-2xl sm:text-3xl font-bold text-[var(--color-text-primary)]" style={{ fontFamily: 'var(--font-family-display)' }}>
+                  {stat.value}
+                </div>
+                <div className="text-xs text-[var(--color-text-muted)] font-mono uppercase tracking-wider mt-1">
+                  {stat.label}
                 </div>
               </div>
-            </div>
+            ))}
           </motion.div>
         </div>
       </div>
 
+      {/* Image Indicators */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {HERO_IMAGES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentImage(i)}
+            className={`w-2 h-2 rounded-full transition-all ${
+              i === currentImage
+                ? 'bg-[var(--color-warn-orange)] w-8'
+                : 'bg-[var(--color-text-muted)]/50 hover:bg-[var(--color-text-muted)]'
+            }`}
+            aria-label={`Imagen ${i + 1}`}
+          />
+        ))}
+      </div>
+
+      {/* Scroll indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-micro text-muted font-mono"
+        className="absolute bottom-8 right-8 hidden lg:flex flex-col items-center gap-2 text-[var(--color-text-muted)]"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, 10, 0] }}
-        transition={{ delay: 1.5, duration: 1, repeat: Infinity, ease: 'easeInOut' }}
-        aria-hidden="true"
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
       >
-        <span className="uppercase tracking-wider">DESCENDER PARA INSPECCIONAR</span>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M12 5v14M19 12l-7 7-7-7" />
-        </svg>
+        <span className="text-[10px] font-mono uppercase tracking-widest [writing-mode:vertical-lr]">
+          Scroll
+        </span>
+        <motion.div
+          className="w-px h-8 bg-[var(--color-text-muted)]/30"
+          animate={{ scaleY: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
       </motion.div>
     </section>
   );
