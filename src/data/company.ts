@@ -12,14 +12,14 @@ export const companyConfig: CompanyConfig = {
     "Nuestra experiencia abarca proyectos en los sectores petrolero, petroquímico y energético, donde hemos demostrado capacidad técnica, logística y operativa para ejecutar desde trabajos de electrificación hasta complejos sistemas de automatización y control industrial."
   ],
   address: "Zona Industrial, Estado Anzoátegui, Venezuela",
-  email: "contacto@cicmelinst.com",
-  phone: "+58 412 000 0000",
-  phoneDisplay: "+58 412 000 0000",
-  whatsapp: "+584120000000",
+  email: "CICMELINST.EPS@GMAIL.COM",
+  phone: "+58 424 883 8856",
+  phoneDisplay: "+58 424 883 8856",
+  whatsapp: "+584248838856",
   schedule: "Lun - Vie: 7:00 AM - 5:00 PM\nSáb: 7:00 AM - 12:00 PM",
   social: {
     linkedin: "#",
-    instagram: "#",
+    instagram: "https://www.instagram.com/cicmelinst/",
     youtube: "#"
   },
   foundationYear: 2012,

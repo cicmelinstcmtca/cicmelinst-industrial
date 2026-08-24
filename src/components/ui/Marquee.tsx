@@ -1,18 +1,19 @@
 import { useRef, useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 import { useClients } from '../../hooks';
 import { clientsTagline } from '../../data/clients';
 import type { Client } from '../../data/types';
 
 interface MarqueeProps {
   speed?: number;
-  paused?: boolean;
   className?: string;
   gap?: number;
 }
 
-export function Marquee({ speed = 50, paused = false, className = '', gap = 48 }: MarqueeProps) {
+export function Marquee({ speed = 50, className = '', gap = 48 }: MarqueeProps) {
   const clients = useClients();
   const [clonedClients, setClonedClients] = useState<Client[]>([]);
+  const [paused, setPaused] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const animationRef = useRef<number | null>(null);
   const lastTimeRef = useRef(0);
@@ -64,10 +65,12 @@ export function Marquee({ speed = 50, paused = false, className = '', gap = 48 }
       className={`overflow-hidden relative ${className}`}
       aria-label="Clientes y socios estratégicos"
       role="region"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
     >
       <div
         ref={containerRef}
-        className="flex items-center gap-12"
+        className="flex items-center"
         style={{ gap: `${gap}px`, willChange: 'transform' }}
         role="list"
         aria-label="Logos de clientes"
@@ -75,24 +78,24 @@ export function Marquee({ speed = 50, paused = false, className = '', gap = 48 }
         {clonedClients.map((client, index) => (
           <div
             key={`${client.name}-${index}`}
-            className="flex-shrink-0 h-12 lg:h-16 transition-opacity hover:opacity-70"
+            className="flex-shrink-0 px-6 py-3 rounded-xl bg-[var(--color-bg-panel)] border border-[var(--color-border-panel)]/50 hover:border-[var(--color-warn-orange)]/30 transition-all duration-300"
             role="listitem"
           >
             <img
               src={client.logo}
               alt={client.name}
-              className="h-full w-auto object-contain filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
+              className="h-8 lg:h-10 w-auto object-contain opacity-50 hover:opacity-100 grayscale hover:grayscale-0 transition-all duration-300"
               loading="lazy"
               width="120"
-              height="60"
+              height="40"
             />
           </div>
         ))}
       </div>
 
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--color-bg-control)] via-[var(--color-bg-control)]/50 to-transparent" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--color-bg-control)] via-[var(--color-bg-control)]/50 to-transparent" />
+        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[var(--color-bg-control)] to-transparent" />
+        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[var(--color-bg-control)] to-transparent" />
       </div>
     </div>
   );
@@ -100,13 +103,63 @@ export function Marquee({ speed = 50, paused = false, className = '', gap = 48 }
 
 export function MarqueeSection() {
   return (
-    <section id="clients" className="bg-[var(--color-bg-control)] border-y border-[var(--color-border-panel)]/50 py-8 lg:py-12" aria-labelledby="marquee-title">
+    <section id="clients" className="py-16 lg:py-20 bg-[var(--color-bg-control)]" aria-labelledby="marquee-title">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <span className="text-[10px] font-mono text-[var(--color-warn-orange)] uppercase tracking-widest mb-4 block" id="marquee-title">CLIENTES Y SOCIOS</span>
-          <p className="text-[10px] text-[var(--color-text-muted)] font-mono">{clientsTagline}</p>
+        {/* Header */}
+        <div className="text-center mb-12">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-block text-xs font-mono text-[var(--color-warn-orange)] uppercase tracking-widest mb-4"
+            id="marquee-title"
+          >
+            Confían en Nosotros
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-2xl sm:text-3xl font-bold text-[var(--color-text-primary)] mb-3"
+            style={{ fontFamily: 'var(--font-family-display)' }}
+          >
+            Clientes y Socios Estratégicos
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-sm text-[var(--color-text-secondary)] max-w-xl mx-auto"
+          >
+            {clientsTagline}
+          </motion.p>
         </div>
-        <Marquee speed={40} gap={64} />
+
+        {/* Marquee */}
+        <Marquee speed={30} gap={24} />
+
+        {/* Trust badges */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="flex flex-wrap justify-center gap-6 mt-12 pt-8 border-t border-[var(--color-border-panel)]/50"
+        >
+          {[
+            { icon: '🛡️', label: 'Certificación SIHO' },
+            { icon: '📋', label: 'Normativa PDVSA' },
+            { icon: '⚡', label: 'Retie / Retilap' },
+            { icon: '🏭', label: '+14 Años' },
+          ].map((badge) => (
+            <div key={badge.label} className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
+              <span>{badge.icon}</span>
+              <span className="font-mono uppercase tracking-wider">{badge.label}</span>
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

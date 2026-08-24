@@ -134,6 +134,25 @@
 
   [data-theme="light"] {
     color-scheme: light;
+    --color-bg-control: #F0F2F5;
+    --color-bg-panel: #FFFFFF;
+    --color-bg-gauge: #E8EBEF;
+    --color-border-panel: #D0D5DD;
+    --color-grid-line: #E0E4EB;
+    --color-text-primary: #1A1F2E;
+    --color-text-secondary: #4A5568;
+    --color-text-muted: #718096;
+    --color-pipe-blue: #0066CC;
+    --color-pipe-blue-glow: #0088DD;
+    --color-insul-green: #009944;
+    --color-insul-green-glow: #33CC66;
+    --color-warn-orange: #E65100;
+    --color-warn-orange-glow: #FF6D00;
+    --color-alarm-red: #CC0000;
+    --color-alarm-red-glow: #E53935;
+    --color-steel: #718096;
+    --color-steel-light: #A0AEC0;
+    --color-concrete: #CBD5E0;
   }
 
   html {
