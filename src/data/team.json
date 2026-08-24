@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Ing. Rafael Martínez",
+    "role": "Director General",
+    "photo": "/images/team/default.jpg",
+    "bio": "Líder con más de 20 años de experiencia en el sector industrial y energético venezolano."
+  },
+  {
+    "name": "Ing. María Rodríguez",
+    "role": "Gerente de Operaciones",
+    "photo": "/images/team/default.jpg",
+    "bio": "Especialista en planificación y ejecución de proyectos de ingeniería industrial."
+  },
+  {
+    "name": "Ing. José López",
+    "role": "Gerente Técnico",
+    "photo": "/images/team/default.jpg",
+    "bio": "Experto en sistemas eléctricos, automatización y control de procesos industriales."
+  },
+  {
+    "name": "Lic. Ana García",
+    "role": "Gerente de Seguridad Industrial",
+    "photo": "/images/team/default.jpg",
+    "bio": "Responsable de implementar y supervisar los estándares SIHO en cada proyecto."
+  }
+]

@@ -1,0 +1,31 @@
+# CICMELINST - Redirects Configuration
+# SPA fallback para routing client-side (Hash routing usado, pero por si acaso)
+
+# Redirecciones de legado / SEO
+/empresa          /#hero          301
+/servicios        /#capabilities  301
+/proyectos        /#projects      301
+/flota            /#fleet         301
+/equipo           /#team          301
+/contacto         /#contact       301
+/clientes         /#clients       301
+
+# Redirecciones de idiomas (si se añade i18n futuro)
+/en/*             /:splat         302
+/pt/*             /:splat         302
+
+# Assets directos (evitar SPA fallback)
+/assets/*         /assets/:splat  200
+/images/*         /images/:splat  200
+/logos/*          /logos/:splat   200
+/draco/*          /draco/:splat   200
+/models/*         /models/:splat  200
+/sw.js            /sw.js          200
+/manifest.webmanifest  /manifest.webmanifest  200
+/favicon.svg      /favicon.svg    200
+/logo.png         /logo.png       200
+/robots.txt       /robots.txt     200
+/sitemap.xml      /sitemap.xml    200
+
+# SPA Fallback - Single Page Application (para hash routing no necesario, pero seguro)
+/*                /index.html     200

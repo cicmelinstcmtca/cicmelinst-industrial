@@ -1,0 +1,640 @@
+@import "tailwindcss";
+
+@theme {
+  /* ============================================================
+     CICMELINST DESIGN TOKENS — "TROPICAL INDUSTRIAL"
+     Basado en: RETIE, API 5L, Señalización Industrial VE, SCADA
+     ============================================================ */
+
+  /* ---- COLOR PALETTE ---- */
+  /* Base - Sala de Control (Dark Default) */
+  --color-bg-control: #0A0F14;
+  --color-bg-panel: #111820;
+  --color-bg-gauge: #0D1318;
+  --color-border-panel: #1E2D3D;
+  --color-grid-line: #152533;
+
+  /* Semáforo Industrial (Norma RETIE) */
+  --color-pipe-blue: #0066CC;
+  --color-pipe-blue-glow: #0099FF;
+  --color-insul-green: #009944;
+  --color-insul-green-glow: #33CC66;
+  --color-warn-orange: #FF6600;
+  --color-warn-orange-glow: #FF9933;
+  --color-alarm-red: #CC0000;
+  --color-alarm-red-glow: #FF3333;
+
+  /* Acero y Concreto */
+  --color-steel: #4A5568;
+  --color-steel-light: #718096;
+  --color-concrete: #2D3748;
+  --color-rust: #8B4513;
+
+  /* Texto */
+  --color-text-primary: #E8ECEF;
+  --color-text-secondary: #9AA3AC;
+  --color-text-muted: #5A6A7A;
+  --color-text-mono: #00FF88;
+
+  /* Modo Día (Light) */
+  --color-bg-control-l: #F0F2F5;
+  --color-bg-panel-l: #FFFFFF;
+  --color-bg-gauge-l: #E8EBEF;
+  --color-border-panel-l: #D0D5DD;
+  --color-grid-line-l: #E0E4EB;
+  --color-text-primary-l: #1A1F2E;
+  --color-text-secondary-l: #4A5568;
+  --color-text-muted-l: #718096;
+
+  /* ---- TYPOGRAPHY ---- */
+  --font-family-display: "Space Grotesk", "IBM Plex Sans", system-ui, sans-serif;
+  --font-family-ui: "IBM Plex Sans", "Space Grotesk", system-ui, sans-serif;
+  --font-family-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+
+  --text-display: clamp(3.5rem, 5vw + 1rem, 6rem);
+  --text-title: clamp(2rem, 3vw + 0.5rem, 3.5rem);
+  --text-h2: clamp(1.5rem, 2vw + 0.25rem, 2.25rem);
+  --text-h3: 1.25rem;
+  --text-body: 1rem;
+  --text-body-lg: 1.125rem;
+  --text-small: 0.875rem;
+  --text-micro: 0.75rem;
+  --text-mono-sm: 0.75rem;
+  --text-mono-lg: 1.5rem;
+
+  --leading-display: 1.0;
+  --leading-title: 1.1;
+  --leading-h2: 1.2;
+  --leading-body: 1.65;
+  --leading-mono: 1.6;
+
+  --tracking-tight-display: -0.03em;
+  --tracking-tight-title: -0.02em;
+  --tracking-micro: 0.1em;
+
+  --font-weight-display: 700;
+  --font-weight-title: 600;
+  --font-weight-h2: 600;
+  --font-weight-h3: 600;
+  --font-weight-body: 400;
+  --font-weight-small: 500;
+  --font-weight-micro: 500;
+  --font-weight-mono: 400;
+  --font-weight-mono-lg: 700;
+
+  /* ---- SPACING (basado en clearance distances - módulo 8px = 100mm) ---- */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+  --space-5xl: 128px;
+
+  /* ---- BORDER RADIUS (Shape Consistency Lock: solo 3 valores) ---- */
+  --radius-sharp: 0;
+  --radius-panel: 4px;
+  --radius-card: 8px;
+  --radius-pill: 9999px;
+
+  /* ---- SHADOWS (Materialidad Industrial) ---- */
+  --shadow-panel: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+  --shadow-gauge: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05);
+  --shadow-modal: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,102,204,0.2);
+  --shadow-glow-blue: 0 0 20px rgba(0,102,204,0.3), 0 0 40px rgba(0,102,204,0.15);
+  --shadow-glow-green: 0 0 20px rgba(0,153,68,0.3), 0 0 40px rgba(0,153,68,0.15);
+  --shadow-glow-orange: 0 0 20px rgba(255,102,0,0.3), 0 0 40px rgba(255,102,0,0.15);
+
+  /* ---- Z-INDEX SCALE (Documentado) ---- */
+  --z-base: 10;
+  --z-sticky: 20;
+  --z-modal: 30;
+  --z-toast: 40;
+  --z-cursor: 50;
+
+  /* ---- BREAKPOINTS ---- */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ---- TRANSITIONS ---- */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-family-ui);
+    background-color: var(--color-bg-control);
+    color: var(--color-text-primary);
+    line-height: var(--leading-body);
+    font-size: var(--text-body);
+    font-weight: var(--font-weight-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+  }
+
+  [data-theme="light"] body {
+    background-color: var(--color-bg-control-l);
+    color: var(--color-text-primary-l);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  *::selection {
+    background-color: var(--color-warn-orange);
+    color: var(--color-bg-control);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pipe-blue-glow);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Typography utilities */
+  .text-display {
+    font-family: var(--font-family-display);
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-tight-display);
+    font-weight: var(--font-weight-display);
+  }
+
+  .text-title {
+    font-family: var(--font-family-display);
+    font-size: var(--text-title);
+    line-height: var(--leading-title);
+    letter-spacing: var(--tracking-tight-title);
+    font-weight: var(--font-weight-title);
+  }
+
+  .text-h2 {
+    font-family: var(--font-family-display);
+    font-size: var(--text-h2);
+    line-height: var(--leading-h2);
+    font-weight: var(--font-weight-h2);
+  }
+
+  .text-h3 {
+    font-family: var(--font-family-display);
+    font-size: var(--text-h3);
+    line-height: 1.3;
+    font-weight: var(--font-weight-h3);
+  }
+
+  .text-body {
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    font-weight: var(--font-weight-body);
+  }
+
+  .text-body-lg {
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-body);
+    font-weight: var(--font-weight-body);
+  }
+
+  .text-small {
+    font-size: var(--text-small);
+    line-height: 1.5;
+    font-weight: var(--font-weight-small);
+  }
+
+  .text-micro {
+    font-size: var(--text-micro);
+    line-height: 1.4;
+    font-weight: var(--font-weight-micro);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-micro);
+  }
+
+  .text-mono-sm {
+    font-family: var(--font-family-mono);
+    font-size: var(--text-mono-sm);
+    line-height: var(--leading-mono);
+    font-weight: var(--font-weight-mono);
+  }
+
+  .text-mono-lg {
+    font-family: var(--font-family-mono);
+    font-size: var(--text-mono-lg);
+    line-height: 1.2;
+    font-weight: var(--font-weight-mono-lg);
+  }
+
+  /* Color utilities */
+  .text-primary { color: var(--color-text-primary); }
+  .text-secondary { color: var(--color-text-secondary); }
+  .text-muted { color: var(--color-text-muted); }
+  .text-mono { color: var(--color-text-mono); }
+  .text-pipe-blue { color: var(--color-pipe-blue); }
+  .text-insul-green { color: var(--color-insul-green); }
+  .text-warn-orange { color: var(--color-warn-orange); }
+  .text-alarm-red { color: var(--color-alarm-red); }
+
+  [data-theme="light"] .text-primary { color: var(--color-text-primary-l); }
+  [data-theme="light"] .text-secondary { color: var(--color-text-secondary-l); }
+  [data-theme="light"] .text-muted { color: var(--color-text-muted-l); }
+
+  /* Background utilities */
+  .bg-control { background-color: var(--color-bg-control); }
+  .bg-panel { background-color: var(--color-bg-panel); }
+  .bg-gauge { background-color: var(--color-bg-gauge); }
+
+  [data-theme="light"] .bg-control { background-color: var(--color-bg-control-l); }
+  [data-theme="light"] .bg-panel { background-color: var(--color-bg-panel-l); }
+  [data-theme="light"] .bg-gauge { background-color: var(--color-bg-gauge-l); }
+
+  /* Border utilities */
+  .border-panel { border: 1px solid var(--color-border-panel); }
+  [data-theme="light"] .border-panel { border-color: var(--color-border-panel-l); }
+
+  /* Shadow utilities */
+  .shadow-panel { box-shadow: var(--shadow-panel); }
+  .shadow-gauge { box-shadow: var(--shadow-gauge); }
+  .shadow-modal { box-shadow: var(--shadow-modal); }
+  .shadow-glow-blue { box-shadow: var(--shadow-glow-blue); }
+  .shadow-glow-green { box-shadow: var(--shadow-glow-green); }
+  .shadow-glow-orange { box-shadow: var(--shadow-glow-orange); }
+
+  /* Radius utilities */
+  .radius-sharp { border-radius: var(--radius-sharp); }
+  .radius-panel { border-radius: var(--radius-panel); }
+  .radius-card { border-radius: var(--radius-card); }
+  .radius-pill { border-radius: var(--radius-pill); }
+
+  /* Grid pattern for SCADA background */
+  .grid-pattern {
+    background-image:
+      linear-gradient(var(--color-grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid-line) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  [data-theme="light"] .grid-pattern {
+    background-image:
+      linear-gradient(var(--color-grid-line-l) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid-line-l) 1px, transparent 1px);
+  }
+
+  /* SCADA scanlines effect */
+  .scanlines::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.08) 2px,
+      rgba(0, 0, 0, 0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  [data-theme="light"] .scanlines::before {
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    );
+  }
+
+  /* Gauge arc utility */
+  .gauge-arc {
+    transform: rotate(-90deg);
+    transform-origin: center;
+  }
+
+  /* Status badge variants */
+  .badge-energized { background: var(--color-insul-green); color: var(--color-bg-control); }
+  .badge-deenergized { background: var(--color-steel); color: var(--color-text-primary); }
+  .badge-maintenance { background: var(--color-warn-orange); color: var(--color-bg-control); }
+  .badge-fault { background: var(--color-alarm-red); color: var(--color-text-primary); }
+
+  .badge-ok { background: var(--color-insul-green); color: var(--color-bg-control); }
+  .badge-progress { background: var(--color-pipe-blue); color: var(--color-text-primary); }
+  .badge-scheduled { background: var(--color-warn-orange); color: var(--color-bg-control); }
+
+  /* Button variants */
+  .btn-primary {
+    background: var(--color-warn-orange);
+    color: var(--color-bg-control);
+    font-family: var(--font-family-display);
+    font-weight: 600;
+    padding: var(--space-sm) var(--space-xl);
+    border-radius: var(--radius-panel);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-warn-orange-glow);
+    box-shadow: var(--shadow-glow-orange);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-pipe-blue-glow);
+    font-family: var(--font-family-display);
+    font-weight: 600;
+    padding: var(--space-sm) var(--space-xl);
+    border-radius: var(--radius-panel);
+    border: 1px solid var(--color-pipe-blue-glow);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-pipe-blue-glow);
+    color: var(--color-bg-control);
+    box-shadow: var(--shadow-glow-blue);
+  }
+
+  .btn-emergency {
+    background: var(--color-alarm-red);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-display);
+    font-weight: 700;
+    padding: var(--space-md) var(--space-2xl);
+    border-radius: var(--radius-sharp);
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-emergency::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+
+  .btn-emergency:hover::before {
+    transform: translateX(100%);
+  }
+
+  .btn-emergency:hover {
+    background: var(--color-alarm-red-glow);
+    box-shadow: 0 0 30px rgba(204, 0, 0, 0.4);
+  }
+
+  /* Input styles */
+  .input-field {
+    width: 100%;
+    background: var(--color-bg-gauge);
+    border: 1px solid var(--color-border-panel);
+    border-radius: var(--radius-panel);
+    padding: var(--space-sm) var(--space-md);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-ui);
+    font-size: var(--text-body);
+    transition: all var(--transition-fast);
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: var(--color-pipe-blue-glow);
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+  }
+
+  .input-field::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .input-field.error {
+    border-color: var(--color-alarm-red);
+    box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
+  }
+
+  [data-theme="light"] .input-field {
+    background: var(--color-bg-gauge-l);
+    border-color: var(--color-border-panel-l);
+    color: var(--color-text-primary-l);
+  }
+
+  [data-theme="light"] .input-field::placeholder {
+    color: var(--color-text-muted-l);
+  }
+
+  /* Label styles */
+  .label-tag {
+    font-family: var(--font-family-mono);
+    font-size: var(--text-micro);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xs);
+    display: block;
+  }
+
+  /* Container */
+  .container-main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-xl);
+  }
+
+  .section-padding {
+    padding: var(--space-4xl) 0;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-control);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-panel);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-steel);
+  }
+
+  [data-theme="light"] ::-webkit-scrollbar-track {
+    background: var(--color-bg-control-l);
+  }
+
+  [data-theme="light"] ::-webkit-scrollbar-thumb {
+    background: var(--color-border-panel-l);
+  }
+
+  [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-steel-light);
+  }
+
+  /* ---- SCADA MODE (Terminal Verde) ---- */
+  [data-theme="scada"] {
+    color-scheme: dark;
+    --color-bg-control: #051005;
+    --color-bg-panel: #081808;
+    --color-bg-gauge: #061206;
+    --color-border-panel: #0F2A0F;
+    --color-grid-line: #0A330A;
+    --color-text-primary: #00FF88;
+    --color-text-secondary: #00CC6A;
+    --color-text-muted: #008844;
+    --color-pipe-blue: #00FF88;
+    --color-pipe-blue-glow: #00FF88;
+    --color-insul-green: #00FF88;
+    --color-insul-green-glow: #00FF88;
+    --color-warn-orange: #FFAA00;
+    --color-warn-orange-glow: #FFCC33;
+    --color-alarm-red: #FF3333;
+    --color-alarm-red-glow: #FF6666;
+  }
+
+  [data-theme="scada"] body {
+    background-color: var(--color-bg-control);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-mono);
+  }
+
+  [data-theme="scada"] .bg-control { background-color: var(--color-bg-control); }
+  [data-theme="scada"] .bg-panel { background-color: var(--color-bg-panel); }
+  [data-theme="scada"] .bg-gauge { background-color: var(--color-bg-gauge); }
+  [data-theme="scada"] .border-panel { border-color: var(--color-border-panel); }
+  [data-theme="scada"] .text-primary { color: var(--color-text-primary); }
+  [data-theme="scada"] .text-secondary { color: var(--color-text-secondary); }
+  [data-theme="scada"] .text-muted { color: var(--color-text-muted); }
+  [data-theme="scada"] .text-pipe-blue { color: var(--color-pipe-blue); }
+  [data-theme="scada"] .text-insul-green { color: var(--color-insul-green); }
+  [data-theme="scada"] .text-warn-orange { color: var(--color-warn-orange); }
+  [data-theme="scada"] .text-alarm-red { color: var(--color-alarm-red); }
+
+  [data-theme="scada"] .grid-pattern {
+    background-image:
+      linear-gradient(var(--color-grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid-line) 1px, transparent 1px);
+  }
+
+  [data-theme="scada"] .scanlines::before {
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 136, 0.05) 2px,
+      rgba(0, 255, 136, 0.05) 4px
+    );
+  }
+
+  [data-theme="scada"] .input-field {
+    background: var(--color-bg-gauge);
+    border-color: var(--color-border-panel);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-mono);
+  }
+
+  [data-theme="scada"] .input-field:focus {
+    border-color: var(--color-pipe-blue-glow);
+    box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+  }
+
+  [data-theme="scada"] .input-field::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  [data-theme="scada"] ::-webkit-scrollbar-track {
+    background: var(--color-bg-control);
+  }
+
+  [data-theme="scada"] ::-webkit-scrollbar-thumb {
+    background: var(--color-border-panel);
+  }
+
+  [data-theme="scada"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-pipe-blue-glow);
+  }
+
+  [data-theme="scada"] .btn-primary {
+    background: var(--color-warn-orange);
+    color: var(--color-bg-control);
+  }
+
+  [data-theme="scada"] .btn-primary:hover {
+    background: var(--color-warn-orange-glow);
+  }
+
+  [data-theme="scada"] .btn-secondary {
+    color: var(--color-pipe-blue-glow);
+    border-color: var(--color-pipe-blue-glow);
+  }
+
+  [data-theme="scada"] .btn-secondary:hover {
+    background: var(--color-pipe-blue-glow);
+    color: var(--color-bg-control);
+  }
+
+  [data-theme="scada"] .btn-emergency {
+    background: var(--color-alarm-red);
+  }
+
+  [data-theme="scada"] .btn-emergency:hover {
+    background: var(--color-alarm-red-glow);
+  }
+
+  [data-theme="scada"] .badge-energized { background: var(--color-insul-green); color: var(--color-bg-control); }
+  [data-theme="scada"] .badge-deenergized { background: var(--color-steel); color: var(--color-text-primary); }
+  [data-theme="scada"] .badge-maintenance { background: var(--color-warn-orange); color: var(--color-bg-control); }
+  [data-theme="scada"] .badge-fault { background: var(--color-alarm-red); color: var(--color-text-primary); }
+
+  [data-theme="scada"] .shadow-glow-blue { box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), 0 0 40px rgba(0, 255, 136, 0.15); }
+  [data-theme="scada"] .shadow-glow-green { box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), 0 0 40px rgba(0, 255, 136, 0.15); }
+  [data-theme="scada"] .shadow-glow-orange { box-shadow: 0 0 20px rgba(255, 170, 0, 0.3), 0 0 40px rgba(255, 170, 0, 0.15); }
+}
