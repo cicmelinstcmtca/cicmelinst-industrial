@@ -1,212 +1,227 @@
 import { motion } from 'motion/react';
-import { Card } from '../ui';
+import { useTeam } from '../../hooks';
 import type { TeamMember } from '../../data/types';
-import { useTeam, useTeamLocations } from '../../hooks';
 
-const LOCATION_CONFIG = {
-  planta: { color: 'text-insul-green', label: 'EN PLANTA', dot: 'bg-insul-green' },
-  oficina: { color: 'text-pipe-blue', label: 'OFICINA', dot: 'bg-pipe-blue' },
-  guardia: { color: 'text-warn-orange', label: 'GUARDIA', dot: 'bg-warn-orange' },
+const ROLE_CATEGORY: Record<string, { label: string; color: string }> = {
+  'Director General': { label: 'Dirección', color: 'bg-[var(--color-warn-orange)]' },
+  'Gerente': { label: 'Gerencia', color: 'bg-[var(--color-pipe-blue)]' },
+  'Supervisor': { label: 'Supervisión', color: 'bg-[var(--color-insul-green)]' },
+  'Jefe': { label: 'Jefatura', color: 'bg-[var(--color-insul-green)]' },
+  'Coordinadora': { label: 'Coordinación', color: 'bg-[var(--color-pipe-blue)]' },
+  'Téc': { label: 'Técnico', color: 'bg-[var(--color-text-muted)]' },
 };
 
-function mapTeamMember(member: TeamMember) {
-  return {
-    id: member.name.replace(/\s+/g, '-').toLowerCase(),
-    initials: member.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
-    name: member.name,
-    role: member.role,
-    location: member.location,
-    phone: member.phone,
-    email: member.email,
-    certifications: [], // Se pueden añadir desde data si se tiene
-    experience: member.bio,
-    photoUrl: member.photo,
-  };
+function getCategory(role: string) {
+  for (const [key, val] of Object.entries(ROLE_CATEGORY)) {
+    if (role.includes(key)) return val;
+  }
+  return { label: 'Equipo', color: 'bg-[var(--color-text-muted)]' };
+}
+
+function getInitials(name: string) {
+  return name
+    .replace(/^(Ing\.|Lic\.|Téc\.|Dr\.)\s*/i, '')
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 }
 
 export function Team() {
   const teamMembers = useTeam();
-  const locations = useTeamLocations();
 
-  const mappedMembers = teamMembers.map(mapTeamMember);
+  const directors = teamMembers.filter((m) =>
+    ['Director General', 'Gerente'].some((r) => m.role.includes(r))
+  );
+  const staff = teamMembers.filter(
+    (m) => !['Director General', 'Gerente'].some((r) => m.role.includes(r))
+  );
 
   return (
-    <section
-      id="team"
-      className="section-padding bg-control relative"
-      aria-labelledby="team-title"
-    >
-      <div className="absolute inset-0 grid-pattern opacity-20 pointer-events-none" aria-hidden="true" />
-      <div className="absolute inset-0 scanlines pointer-events-none opacity-50" aria-hidden="true" />
-
-      <div className="container-main relative">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center max-w-3xl mx-auto mb-16"
-        >
-          <span className="label-tag text-warn-orange mb-4 block">TURNO DE OPERACIÓN</span>
-          <h2 id="team-title" className="text-title text-primary mb-6">
-            JUNTA DIRECTIVA Y GERENCIA TÉCNICA
-          </h2>
-          <p className="text-body-lg text-secondary">
-            Profesionales certificados con experiencia comprobada en el sector petrolero venezolano.
-            Cada miembro lleva radio operativo para respuesta inmediata.
-          </p>
-        </motion.div>
-
-        <div className="relative">
-          <svg 
-            className="absolute inset-0 -z-10 opacity-20 pointer-events-none" 
-            viewBox="0 0 1200 800" 
-            preserveAspectRatio="xMidYMid meet"
-            aria-hidden="true"
-            style={{ width: '100%', height: '100%' }}
+    <section id="team" className="py-20 lg:py-32 bg-[var(--color-bg-control)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-block text-xs font-mono text-[var(--color-warn-orange)] uppercase tracking-widest mb-4"
           >
-            <defs>
-              <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                <polygon points="0 0, 10 3.5, 0 7" fill="var(--color-pipe-blue-glow)" />
-              </marker>
-            </defs>
-            <path d="M 150 200 L 1050 200" stroke="var(--color-pipe-blue-glow)" strokeWidth="1" fill="none" strokeDasharray="10 5" />
-            <path d="M 150 600 L 1050 600" stroke="var(--color-pipe-blue-glow)" strokeWidth="1" fill="none" strokeDasharray="10 5" />
-            <path d="M 300 200 L 300 600" stroke="var(--color-pipe-blue-glow)" strokeWidth="1" fill="none" strokeDasharray="10 5" />
-            <path d="M 600 200 L 600 600" stroke="var(--color-pipe-blue-glow)" strokeWidth="1" fill="none" strokeDasharray="10 5" />
-            <path d="M 900 200 L 900 600" stroke="var(--color-pipe-blue-glow)" strokeWidth="1" fill="none" strokeDasharray="10 5" />
-          </svg>
+            Nuestro Equipo
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--color-text-primary)] max-w-3xl mx-auto leading-tight"
+            style={{ fontFamily: 'var(--font-family-display)' }}
+          >
+            Liderazgo y Experiencia
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="mt-4 text-lg text-[var(--color-text-secondary)] max-w-2xl mx-auto"
+          >
+            Profesionales certificados con décadas de experiencia en el sector
+            industrial y energético venezolano.
+          </motion.p>
+        </div>
 
-          <div className="grid lg:grid-cols-4 gap-6 relative z-10">
-            {mappedMembers.map((member, index) => {
-              const locConfig = LOCATION_CONFIG[member.location as keyof typeof LOCATION_CONFIG];
-              const row = index < 4 ? 0 : 1;
-              const col = index % 4;
-
-              return (
-                <motion.div
-                  key={member.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-50px' }}
-                  transition={{ duration: 0.5, delay: index * 0.08 }}
-                  className="relative"
-                  style={{
-                    gridColumn: col + 1,
-                    gridRow: row + 1,
-                  }}
-                >
-                  <Card variant="panel" padding="lg" className="h-full relative group">
-                    <div className="absolute top-4 right-4 flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full animate-pulse ${locConfig.dot}`} aria-hidden="true" />
-                      <span className={`label-tag ${locConfig.color}`}>{locConfig.label}</span>
-                    </div>
-
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="relative w-16 h-16 radius-panel bg-panel border border-panel flex-shrink-0 overflow-hidden">
-                        {member.photoUrl && member.photoUrl !== '/images/team/default.jpg' ? (
-                          <img
-                            src={member.photoUrl}
-                            alt=""
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-warn-orange/20 text-warn-orange font-display font-bold text-2xl">
-                            {member.initials}
-                          </div>
-                        )}
-                        <div className="absolute bottom-0 right-0 w-5 h-5 radius-panel border-2 border-bg-control flex items-center justify-center" style={{ backgroundColor: locConfig.dot.replace('bg-', '') }}>
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-h3 text-primary truncate">{member.name}</h3>
-                        <p className="text-small text-secondary truncate">{member.role}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {member.certifications.slice(0, 3).map((cert, i) => (
-                        <span key={i} className="text-micro text-muted px-2 py-1 bg-gauge/50 radius-panel border border-panel/50 font-mono">
-                          {cert}
-                        </span>
-                      ))}
-                      {member.certifications.length > 3 && (
-                        <span className="text-micro text-muted px-2 py-1 bg-gauge/50 radius-panel border border-panel/50 font-mono">
-                          +{member.certifications.length - 3} más
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="text-micro text-muted font-mono mb-4 flex items-center gap-1.5">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                      </svg>
-                      {member.experience}
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-4 border-t border-panel/50">
-                      <a
-                        href={`tel:${member.phone.replace(/-/g, '').replace(/\s+/g, '')}`}
-                        className="flex-1 text-center p-2 radius-panel bg-gauge/50 border border-panel/50 hover:border-warn-orange/50 hover:bg-warn-orange/10 transition-colors text-micro font-mono"
-                        aria-label={`Llamar a ${member.name}`}
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mx-auto mb-1 text-secondary" aria-hidden="true">
-                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                        </svg>
-                        <span className="block">{member.phone}</span>
-                      </a>
-                      <a
-                        href={`mailto:${member.email}`}
-                        className="flex-1 text-center p-2 radius-panel bg-gauge/50 border border-panel/50 hover:border-pipe-blue/50 hover:bg-pipe-blue/10 transition-colors text-micro font-mono"
-                        aria-label={`Email a ${member.name}`}
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mx-auto mb-1 text-secondary" aria-hidden="true">
-                          <rect x="2" y="4" width="20" height="16" rx="2"/>
-                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                        </svg>
-                        <span className="block truncate">{member.email}</span>
-                      </a>
-                    </div>
-                  </Card>
-                </motion.div>
-              );
-            })}
+        {/* Directors */}
+        <div className="mb-16">
+          <motion.h3
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-widest mb-6"
+          >
+            Dirección General
+          </motion.h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {directors.map((member: TeamMember, i: number) => (
+              <DirectorCard key={member.name} member={member} index={i} />
+            ))}
           </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-12 p-4 bg-gauge/30 border border-panel/50 radius-card"
-        >
-          <h3 className="text-h3 text-primary mb-4 flex items-center gap-3">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-warn-orange" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-              <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
-            </svg>
-            RADIO CHECK OPERATIVO
-          </h3>
-          <div className="grid sm:grid-cols-3 gap-4 text-small">
-            {locations.map((loc, i) => {
-              const config = LOCATION_CONFIG[loc];
-              return (
-                <div key={i} className={`flex items-center gap-2 ${config.color} p-3 bg-panel/50 radius-panel border border-panel/50`}>
-                  <span className="text-xl">●</span>
-                  <span className="font-mono">{config.label}</span>
-                </div>
-              );
-            })}
+        {/* Staff */}
+        <div>
+          <motion.h3
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-widest mb-6"
+          >
+            Equipo Técnico
+          </motion.h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {staff.map((member: TeamMember, i: number) => (
+              <StaffCard key={member.name} member={member} index={i} />
+            ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
+  );
+}
+
+function DirectorCard({ member, index }: { member: TeamMember; index: number }) {
+  const initials = getInitials(member.name);
+  const cat = getCategory(member.role);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className="group bg-[var(--color-bg-panel)] border border-[var(--color-border-panel)] rounded-2xl overflow-hidden hover:border-[var(--color-warn-orange)]/30 transition-all duration-300"
+    >
+      {/* Avatar */}
+      <div className="aspect-[4/3] bg-gradient-to-br from-[var(--color-bg-control)] to-[var(--color-bg-panel)] flex items-center justify-center relative">
+        {member.photo && member.photo !== '/images/team/default.jpg' ? (
+          <img
+            src={member.photo}
+            alt={member.name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-24 h-24 rounded-full bg-[var(--color-warn-orange)]/10 border-2 border-[var(--color-warn-orange)]/20 flex items-center justify-center">
+            <span className="text-3xl font-bold text-[var(--color-warn-orange)]" style={{ fontFamily: 'var(--font-family-display)' }}>
+              {initials}
+            </span>
+          </div>
+        )}
+        <div className={`absolute top-4 left-4 px-2 py-1 rounded-md ${cat.color} text-white text-[10px] font-mono uppercase tracking-wider`}>
+          {cat.label}
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="p-5">
+        <h4 className="text-lg font-semibold text-[var(--color-text-primary)] mb-1" style={{ fontFamily: 'var(--font-family-display)' }}>
+          {member.name}
+        </h4>
+        <p className="text-sm text-[var(--color-warn-orange)] font-medium mb-3">
+          {member.role}
+        </p>
+        <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-4 line-clamp-2">
+          {member.bio}
+        </p>
+
+        <div className="flex items-center gap-3 pt-3 border-t border-[var(--color-border-panel)]">
+          <a
+            href={`tel:${member.phone.replace(/[\s-]/g, '')}`}
+            className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+            aria-label={`Llamar a ${member.name}`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+            {member.phone}
+          </a>
+          <a
+            href={`mailto:${member.email}`}
+            className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+            aria-label={`Email a ${member.name}`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+            Email
+          </a>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function StaffCard({ member, index }: { member: TeamMember; index: number }) {
+  const initials = getInitials(member.name);
+  const cat = getCategory(member.role);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className="group flex items-start gap-4 bg-[var(--color-bg-panel)] border border-[var(--color-border-panel)] rounded-xl p-5 hover:border-[var(--color-pipe-blue-glow)]/30 transition-all duration-300"
+    >
+      {/* Avatar */}
+      <div className="relative w-14 h-14 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] flex-shrink-0 overflow-hidden">
+        {member.photo && member.photo !== '/images/team/default.jpg' ? (
+          <img src={member.photo} alt={member.name} className="w-full h-full object-cover" loading="lazy" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-[var(--color-pipe-blue)]/10 text-[var(--color-pipe-blue)] font-bold text-lg" style={{ fontFamily: 'var(--font-family-display)' }}>
+            {initials}
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <h4 className="text-sm font-semibold text-[var(--color-text-primary)] truncate" style={{ fontFamily: 'var(--font-family-display)' }}>
+            {member.name}
+          </h4>
+          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${cat.color}`} />
+        </div>
+        <p className="text-xs text-[var(--color-warn-orange)] font-medium mb-1">
+          {member.role}
+        </p>
+        <p className="text-xs text-[var(--color-text-muted)] leading-relaxed line-clamp-2">
+          {member.bio}
+        </p>
+      </div>
+    </motion.div>
   );
 }
