@@ -78,24 +78,14 @@ export function Marquee({ speed = 50, className = '', gap = 48 }: MarqueeProps) 
         {clonedClients.map((client, index) => (
           <div
             key={`${client.name}-${index}`}
-            className={`flex-shrink-0 rounded-xl transition-all duration-300 ${
-              client.featured
-                ? 'px-8 py-4 bg-[var(--color-bg-panel)] border-2 border-[var(--color-warn-orange)]/60 hover:border-[var(--color-warn-orange)] hover:shadow-lg hover:shadow-[var(--color-warn-orange)]/10'
-                : 'px-6 py-3 bg-[var(--color-bg-panel)] border border-[var(--color-border-panel)]/50 hover:border-[var(--color-warn-orange)]/30'
-            }`}
+            className="flex-shrink-0 px-6 py-3 rounded-xl bg-[var(--color-bg-panel)] border border-[var(--color-border-panel)]/50 hover:border-[var(--color-warn-orange)]/30 transition-all duration-300"
             role="listitem"
           >
             <img
               src={client.logo}
               alt={client.name}
-              className={`w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 ${
-                client.featured
-                  ? 'h-12 lg:h-16 opacity-70 hover:opacity-100'
-                  : 'h-8 lg:h-10 opacity-50 hover:opacity-100'
-              }`}
+              className="h-8 lg:h-10 w-auto object-contain opacity-50 hover:opacity-100 grayscale hover:grayscale-0 transition-all duration-300"
               loading="lazy"
-              width={client.featured ? 180 : 120}
-              height={client.featured ? 64 : 40}
             />
           </div>
         ))}
@@ -132,7 +122,7 @@ export function MarqueeSection() {
             className="text-2xl sm:text-3xl font-bold text-[var(--color-text-primary)] mb-3"
             style={{ fontFamily: 'var(--font-family-display)' }}
           >
-            Clientes y Socios Estratégicos
+            Clientes que Confían en Nosotros
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
