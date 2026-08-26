@@ -87,6 +87,7 @@ export interface Client {
   name: string;
   website: string;
   logo: string;
+  featured?: boolean;
 }
 
 export interface Certification {
