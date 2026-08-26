@@ -83,24 +83,16 @@ export function Header({ onSectionNavigate }: HeaderProps) {
             {/* Logo */}
             <button
               onClick={() => handleNav('hero')}
-              className="flex items-center gap-3 group flex-shrink-0"
+              className="flex items-center group flex-shrink-0"
             >
               <img
                 src={logo || '/logo.png'}
                 alt={name}
-                className={`w-auto transition-all duration-300 ${scrolled ? 'h-10' : 'h-12 lg:h-16'}`}
+                className={`w-auto transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,102,0,0.3)] ${scrolled ? 'h-12' : 'h-16 lg:h-20'}`}
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
-              <div className="hidden sm:block">
-                <div className="text-base lg:text-lg font-bold text-[var(--color-text-primary)] tracking-tight" style={{ fontFamily: 'var(--font-family-display)' }}>
-                  {name}
-                </div>
-                <div className="text-[11px] lg:text-xs text-[var(--color-text-muted)] font-mono uppercase tracking-widest">
-                  Ingeniería Industrial
-                </div>
-              </div>
             </button>
 
             {/* Desktop Nav */}
