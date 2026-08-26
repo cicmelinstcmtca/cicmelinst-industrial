@@ -18,7 +18,7 @@ export const companyConfig: CompanyConfig = {
   whatsapp: "584248838856",
   schedule: "Lun - Vie: 7:00 AM - 5:00 PM\nSáb: 7:00 AM - 12:00 PM",
   social: {
-    linkedin: "#",
+    linkedin: "https://www.linkedin.com/company/cicmelinst/home/",
     instagram: "https://www.instagram.com/cicmelinst/",
     youtube: "#"
   },

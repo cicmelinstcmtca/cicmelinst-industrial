@@ -6,7 +6,8 @@ export const clientLogos: Client[] = [
   { name: "Petrocedeño", website: "#", logo: "/logos/clientes/PDVSA PETROCEDENO.png" },
   { name: "FLUXUS", website: "#", logo: "/logos/clientes/FLUXUS.png" },
   { name: "NABEP", website: "#", logo: "/logos/clientes/NABEP.webp" },
-  { name: "WESCA", website: "#", logo: "/logos/clientes/WESCA.png" }
+  { name: "WESCA", website: "#", logo: "/logos/clientes/WESCA.png" },
+  { name: "Petropiar | Chevron", website: "#", logo: "/logos/clientes/petropiar chevron.jpg" }
 ];
 
 export const clientsTagline = "Empresas que han confiado en nuestra capacidad técnica.";
