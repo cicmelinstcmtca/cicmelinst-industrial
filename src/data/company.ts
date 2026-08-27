@@ -11,7 +11,7 @@ export const companyConfig: CompanyConfig = {
     "Con más de 14 años de trayectoria, CICMELINST, C.A. se ha consolidado como un socio estratégico en el sector industrial, ofreciendo soluciones de ingeniería, construcción, montaje y mantenimiento con los más altos estándares de calidad y seguridad.",
     "Nuestra experiencia abarca proyectos en los sectores petrolero, petroquímico y energético, donde hemos demostrado capacidad técnica, logística y operativa para ejecutar desde trabajos de electrificación hasta complejos sistemas de automatización y control industrial."
   ],
-  address: "Zona Industrial, Estado Anzoátegui, Venezuela",
+  address: "El Tigre, Estado Anzoátegui, Venezuela",
   email: "CICMELINST.EPS@GMAIL.COM",
   phone: "+58 424 883 8856",
   phoneDisplay: "+58 424 883 8856",

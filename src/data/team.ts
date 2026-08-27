@@ -2,76 +2,76 @@ import type { TeamMember } from './types';
 
 export const teamMembers: TeamMember[] = [
   {
-    name: "Ing. Rafael Martínez",
+    name: "Juan Amaya",
     role: "Director General",
     photo: "/images/team/default.jpg",
-    bio: "Líder con más de 20 años de experiencia en el sector industrial y energético venezolano.",
+    bio: "Director General con visión estratégica para el crecimiento de la empresa en el sector industrial venezolano.",
     location: "oficina",
-    phone: "+58 412 000 0001",
-    email: "rmartinez@cicmelinst.com"
+    phone: "",
+    email: ""
   },
   {
-    name: "Ing. María Rodríguez",
-    role: "Gerente de Operaciones",
+    name: "Juan A. Gomez",
+    role: "Director de Producción",
     photo: "/images/team/default.jpg",
-    bio: "Especialista en planificación y ejecución de proyectos de ingeniería industrial.",
-    location: "planta",
-    phone: "+58 412 000 0002",
-    email: "mrodriguez@cicmelinst.com"
+    bio: "Responsable de la planificación y ejecución de todos los proyectos de producción de la empresa.",
+    location: "oficina",
+    phone: "",
+    email: ""
   },
   {
-    name: "Ing. José López",
+    name: "Marlene Mejia",
+    role: "Directora Administrativa",
+    photo: "/images/team/default.jpg",
+    bio: "Gestión administrativa y financiera para el óptimo funcionamiento de la organización.",
+    location: "oficina",
+    phone: "",
+    email: ""
+  },
+  {
+    name: "Ing. Rosanny Ortiz",
+    role: "Gerente de Proyecto",
+    photo: "/images/team/default.jpg",
+    bio: "Especialista en gestión integral de proyectos de ingeniería industrial y energético.",
+    location: "oficina",
+    phone: "",
+    email: ""
+  },
+  {
+    name: "Ing. Editza Ibarra",
+    role: "Gerente PYA",
+    photo: "/images/team/default.jpg",
+    bio: "Responsable de Planeación y Adquisiciones para el desarrollo de proyectos industriales.",
+    location: "oficina",
+    phone: "",
+    email: ""
+  },
+  {
+    name: "Ing. Victor Vargas",
     role: "Gerente Técnico",
     photo: "/images/team/default.jpg",
     bio: "Experto en sistemas eléctricos, automatización y control de procesos industriales.",
     location: "planta",
-    phone: "+58 412 000 0003",
-    email: "jlopez@cicmelinst.com"
+    phone: "",
+    email: ""
   },
   {
-    name: "Lic. Ana García",
-    role: "Gerente de Seguridad Industrial",
+    name: "Lic. Ana Salazar",
+    role: "Gerente de Administración",
     photo: "/images/team/default.jpg",
-    bio: "Responsable de implementar y supervisar los estándares SIHO en cada proyecto.",
-    location: "planta",
-    phone: "+58 412 000 0004",
-    email: "agarcia@cicmelinst.com"
-  },
-  {
-    name: "Ing. Carlos Mendoza",
-    role: "Supervisor Eléctrico",
-    photo: "/images/team/default.jpg",
-    bio: "Especialista en media y alta tensión, subestaciones y sistemas de protección.",
-    location: "guardia",
-    phone: "+58 412 000 0005",
-    email: "cmendoza@cicmelinst.com"
-  },
-  {
-    name: "Ing. Patricia Silva",
-    role: "Supervisora de Instrumentación",
-    photo: "/images/team/default.jpg",
-    bio: "Experta en calibración, instrumentación de proceso y sistemas SCADA.",
-    location: "planta",
-    phone: "+58 412 000 0006",
-    email: "psilva@cicmelinst.com"
-  },
-  {
-    name: "Téc. Luis Herrera",
-    role: "Jefe de Logística y Flota",
-    photo: "/images/team/default.jpg",
-    bio: "Responsable de la operatividad de la flota de 24 vehículos y equipos pesados.",
+    bio: "Administración integral de recursos humanos y operaciones administrativas.",
     location: "oficina",
-    phone: "+58 412 000 0007",
-    email: "lherrera@cicmelinst.com"
+    phone: "",
+    email: ""
   },
   {
-    name: "Ing. Sofía Vargas",
-    role: "Coordinadora de Proyectos",
+    name: "TSU. Ligia Regis",
+    role: "Coord. SIHO-A",
     photo: "/images/team/default.jpg",
-    bio: "Gestión integral de proyectos EPC, control de costos y cronogramas.",
+    bio: "Coordinadora del Sistema Integrado de Higiene y Seguridad Ocupacional Ambiental.",
     location: "oficina",
-    phone: "+58 412 000 0008",
-    email: "svargas@cicmelinst.com"
+    phone: "",
+    email: ""
   }
 ];
 

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" fill="none">
+  <rect width="400" height="250" fill="#111820"/>
+  <rect x="0" y="0" width="400" height="250" fill="url(#grid)" opacity="0.05"/>
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#7A8A9A" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <g transform="translate(200, 125)">
+    <!-- Factory Icon -->
+    <rect x="-60" y="-40" width="120" height="80" rx="4" fill="none" stroke="#FF6600" stroke-width="2" opacity="0.3"/>
+    <rect x="-50" y="-30" width="30" height="60" rx="2" fill="none" stroke="#FF6600" stroke-width="1.5" opacity="0.2"/>
+    <rect x="-10" y="-20" width="20" height="50" rx="2" fill="none" stroke="#FF6600" stroke-width="1.5" opacity="0.2"/>
+    <rect x="20" y="-30" width="30" height="60" rx="2" fill="none" stroke="#FF6600" stroke-width="1.5" opacity="0.2"/>
+    <!-- Chimney -->
+    <rect x="-45" y="-60" width="10" height="20" fill="none" stroke="#FF6600" stroke-width="1.5" opacity="0.3"/>
+    <rect x="-25" y="-55" width="8" height="15" fill="none" stroke="#FF6600" stroke-width="1.5" opacity="0.3"/>
+    <!-- Lightning -->
+    <path d="M 0 -80 L -8 -65 L 0 -65 L 8 -50 L 0 -50 L 8 -35" fill="none" stroke="#0099FF" stroke-width="2" opacity="0.4"/>
+  </g>
+  <text x="200" y="200" text-anchor="middle" fill="#7A8A9A" font-family="monospace" font-size="10" opacity="0.5">PROYECTO INDUSTRIAL</text>
+</svg>
