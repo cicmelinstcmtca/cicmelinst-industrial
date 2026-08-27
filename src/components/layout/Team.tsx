@@ -2,22 +2,6 @@ import { motion } from 'motion/react';
 import { useTeam } from '../../hooks';
 import type { TeamMember } from '../../data/types';
 
-const ROLE_CATEGORY: Record<string, { label: string; color: string }> = {
-  'Director': { label: 'Dirección', color: 'bg-[var(--color-warn-orange)]' },
-  'Gerente': { label: 'Gerencia', color: 'bg-[var(--color-pipe-blue)]' },
-  'Supervisor': { label: 'Supervisión', color: 'bg-[var(--color-insul-green)]' },
-  'Jefe': { label: 'Jefatura', color: 'bg-[var(--color-insul-green)]' },
-  'Coordinadora': { label: 'Coordinación', color: 'bg-[var(--color-pipe-blue)]' },
-  'Coord': { label: 'Coordinación', color: 'bg-[var(--color-pipe-blue)]' },
-};
-
-function getCategory(role: string) {
-  for (const [key, val] of Object.entries(ROLE_CATEGORY)) {
-    if (role.includes(key)) return val;
-  }
-  return { label: 'Equipo', color: 'bg-[var(--color-text-muted)]' };
-}
-
 function getInitials(name: string) {
   return name
     .replace(/^(Ing\.|Lic\.|Téc\.|Dr\.|TSU\.)\s*/i, '')
@@ -28,28 +12,54 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
+function getRoleShort(role: string): string {
+  if (role.includes('Director')) return 'DIRECTION';
+  if (role.includes('Gerente')) return 'MANAGEMENT';
+  if (role.includes('Coord')) return 'COORDINATION';
+  return 'STAFF';
+}
+
+function getCoordIndex(i: number): string {
+  const col = String.fromCharCode(65 + (i % 4));
+  const row = Math.floor(i / 4) + 1;
+  return `${col}${row}`;
+}
+
 export function Team() {
   const teamMembers = useTeam();
-
-  const directors = teamMembers.filter((m) =>
-    m.role.includes('Director')
-  );
-  const staff = teamMembers.filter(
-    (m) => !m.role.includes('Director')
-  );
+  const director = teamMembers.find((m) => m.role.includes('Director General'));
+  const rest = teamMembers.filter((m) => m !== director);
 
   return (
-    <section id="team" className="py-20 lg:py-32 bg-[var(--color-bg-control)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="team" className="py-20 lg:py-32 bg-[var(--color-bg-control)] relative overflow-hidden">
+      {/* Blueprint grid background */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `
+          linear-gradient(var(--color-pipe-blue) 1px, transparent 1px),
+          linear-gradient(90deg, var(--color-pipe-blue) 1px, transparent 1px)
+        `,
+        backgroundSize: '40px 40px'
+      }} />
+
+      {/* Major grid lines */}
+      <div className="absolute inset-0 opacity-[0.06]" style={{
+        backgroundImage: `
+          linear-gradient(var(--color-pipe-blue) 1px, transparent 1px),
+          linear-gradient(90deg, var(--color-pipe-blue) 1px, transparent 1px)
+        `,
+        backgroundSize: '200px 200px'
+      }} />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Header */}
         <div className="text-center mb-16">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-block text-xs font-mono text-[var(--color-warn-orange)] uppercase tracking-widest mb-4"
+            className="inline-block text-xs font-mono text-[var(--color-pipe-blue-glow)] uppercase tracking-widest mb-4"
           >
-            Nuestro Equipo
+            Diagrama Organizacional
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -73,37 +83,58 @@ export function Team() {
           </motion.p>
         </div>
 
-        {/* Directors */}
-        <div className="mb-16">
-          <motion.h3
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-widest mb-6"
-          >
-            Dirección General
-          </motion.h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {directors.map((member: TeamMember, i: number) => (
-              <DirectorCard key={member.name} member={member} index={i} />
+        {/* Blueprint Diagram */}
+        <div className="relative max-w-5xl mx-auto">
+          {/* Connection lines — SVG overlay */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none hidden sm:block" style={{ zIndex: 0 }}>
+            {/* Director to rest horizontal line */}
+            {director && rest.length > 0 && (
+              <>
+                <line
+                  x1="50%" y1="160" x2="50%" y2="220"
+                  stroke="var(--color-pipe-blue)" strokeWidth="1" strokeDasharray="4 4" opacity="0.3"
+                />
+                <line
+                  x1="12.5%" y1="220" x2="87.5%" y2="220"
+                  stroke="var(--color-pipe-blue)" strokeWidth="1" strokeDasharray="4 4" opacity="0.3"
+                />
+                {/* Vertical drops to each staff member */}
+                {rest.map((_, i) => (
+                  <line
+                    key={i}
+                    x1={`${12.5 + i * 25}%`} y1="220" x2={`${12.5 + i * 25}%`} y2="240"
+                    stroke="var(--color-pipe-blue)" strokeWidth="1" strokeDasharray="4 4" opacity="0.3"
+                  />
+                ))}
+              </>
+            )}
+          </svg>
+
+          {/* Director Node */}
+          {director && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative z-10 max-w-md mx-auto mb-16"
+            >
+              <BlueprintNode member={director} index={0} isDirector />
+            </motion.div>
+          )}
+
+          {/* Staff Grid */}
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {rest.map((member: TeamMember, i: number) => (
+              <BlueprintNode key={member.name} member={member} index={i + 1} />
             ))}
           </div>
-        </div>
 
-        {/* Staff */}
-        <div>
-          <motion.h3
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-widest mb-6"
-          >
-            Equipo Directivo
-          </motion.h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {staff.map((member: TeamMember, i: number) => (
-              <StaffCard key={member.name} member={member} index={i} />
-            ))}
+          {/* Blueprint annotations */}
+          <div className="hidden lg:flex justify-between mt-8 text-[9px] font-mono text-[var(--color-text-muted)]/40 uppercase tracking-[0.2em]">
+            <span>Rev. 03 — {new Date().toLocaleDateString('es-VE', { year: 'numeric', month: 'short' })}</span>
+            <span>CICMELINST C.A. — Org. Chart</span>
+            <span>Dwg. No. CIC-ORG-001</span>
           </div>
         </div>
       </div>
@@ -111,92 +142,104 @@ export function Team() {
   );
 }
 
-function DirectorCard({ member, index }: { member: TeamMember; index: number }) {
+function BlueprintNode({ member, index, isDirector = false }: { member: TeamMember; index: number; isDirector?: boolean }) {
   const initials = getInitials(member.name);
-  const cat = getCategory(member.role);
+  const roleTag = getRoleShort(member.role);
+  const coord = getCoordIndex(index);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.1 }}
-      className="group bg-[var(--color-bg-panel)] border border-[var(--color-border-panel)] rounded-2xl overflow-hidden hover:border-[var(--color-warn-orange)]/30 transition-all duration-300"
+      transition={{ delay: index * 0.08, duration: 0.5 }}
+      className={`group relative ${isDirector ? '' : ''}`}
     >
-      {/* Avatar */}
-      <div className="aspect-[4/3] bg-gradient-to-br from-[var(--color-bg-control)] to-[var(--color-bg-panel)] flex items-center justify-center relative">
-        {member.photo && member.photo !== '/images/team/default.jpg' ? (
-          <img
-            src={member.photo}
-            alt={member.name}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div className="w-24 h-24 rounded-full bg-[var(--color-warn-orange)]/10 border-2 border-[var(--color-warn-orange)]/20 flex items-center justify-center">
-            <span className="text-3xl font-bold text-[var(--color-warn-orange)]" style={{ fontFamily: 'var(--font-family-display)' }}>
-              {initials}
+      {/* Coordinate marker */}
+      <div className="absolute -top-3 -left-2 text-[9px] font-mono text-[var(--color-text-muted)]/40 z-20">
+        [{coord}]
+      </div>
+
+      {/* Node card */}
+      <div className={`
+        relative overflow-hidden rounded-lg border transition-all duration-300
+        ${isDirector
+          ? 'border-[var(--color-pipe-blue-glow)]/40 bg-[var(--color-bg-panel)]'
+          : 'border-[var(--color-border-panel)] bg-[var(--color-bg-panel)] hover:border-[var(--color-pipe-blue-glow)]/30'
+        }
+      `}>
+        {/* Top accent line */}
+        <div className={`h-[2px] ${isDirector ? 'bg-[var(--color-pipe-blue-glow)]' : 'bg-[var(--color-border-panel)] group-hover:bg-[var(--color-pipe-blue-glow)]'} transition-colors duration-300`} />
+
+        <div className="p-5">
+          {/* Initials + Role tag row */}
+          <div className="flex items-start justify-between mb-4">
+            {/* Large initials */}
+            <div className="relative">
+              <span
+                className={`
+                  font-bold leading-none tracking-tight
+                  ${isDirector ? 'text-5xl lg:text-6xl' : 'text-4xl'}
+                `}
+                style={{
+                  fontFamily: 'var(--font-family-display)',
+                  color: 'var(--color-pipe-blue)',
+                  opacity: 0.15,
+                  position: 'absolute',
+                  top: '-8px',
+                  left: '-4px'
+                }}
+              >
+                {initials}
+              </span>
+              <span
+                className={`
+                  font-bold leading-none tracking-tight relative z-10
+                  ${isDirector ? 'text-5xl lg:text-6xl' : 'text-4xl'}
+                `}
+                style={{
+                  fontFamily: 'var(--font-family-display)',
+                  color: isDirector ? 'var(--color-pipe-blue-glow)' : 'var(--color-text-primary)',
+                }}
+              >
+                {initials}
+              </span>
+            </div>
+
+            {/* Role category badge */}
+            <span className="text-[9px] font-mono px-2 py-0.5 rounded border border-[var(--color-border-panel)] text-[var(--color-text-muted)] uppercase tracking-widest">
+              {roleTag}
             </span>
           </div>
-        )}
-        <div className={`absolute top-4 left-4 px-2 py-1 rounded-md ${cat.color} text-white text-[10px] font-mono uppercase tracking-wider`}>
-          {cat.label}
-        </div>
-      </div>
 
-      {/* Info */}
-      <div className="p-5">
-        <h4 className="text-lg font-semibold text-[var(--color-text-primary)] mb-1" style={{ fontFamily: 'var(--font-family-display)' }}>
-          {member.name}
-        </h4>
-        <p className="text-sm text-[var(--color-warn-orange)] font-medium mb-3">
-          {member.role}
-        </p>
-        <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed line-clamp-2">
-          {member.bio}
-        </p>
-      </div>
-    </motion.div>
-  );
-}
-
-function StaffCard({ member, index }: { member: TeamMember; index: number }) {
-  const initials = getInitials(member.name);
-  const cat = getCategory(member.role);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1 }}
-      className="group flex items-start gap-4 bg-[var(--color-bg-panel)] border border-[var(--color-border-panel)] rounded-xl p-5 hover:border-[var(--color-pipe-blue-glow)]/30 transition-all duration-300"
-    >
-      {/* Avatar */}
-      <div className="relative w-14 h-14 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] flex-shrink-0 overflow-hidden">
-        {member.photo && member.photo !== '/images/team/default.jpg' ? (
-          <img src={member.photo} alt={member.name} className="w-full h-full object-cover" loading="lazy" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-[var(--color-pipe-blue)]/10 text-[var(--color-pipe-blue)] font-bold text-lg" style={{ fontFamily: 'var(--font-family-display)' }}>
-            {initials}
-          </div>
-        )}
-      </div>
-
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <h4 className="text-sm font-semibold text-[var(--color-text-primary)] truncate" style={{ fontFamily: 'var(--font-family-display)' }}>
+          {/* Name */}
+          <h4
+            className={`
+              font-semibold text-[var(--color-text-primary)] mb-1 leading-tight
+              ${isDirector ? 'text-lg' : 'text-base'}
+            `}
+            style={{ fontFamily: 'var(--font-family-display)' }}
+          >
             {member.name}
           </h4>
-          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${cat.color}`} />
+
+          {/* Role */}
+          <p className={`text-sm font-medium mb-3 ${isDirector ? 'text-[var(--color-pipe-blue-glow)]' : 'text-[var(--color-text-muted)]'}`}>
+            {member.role}
+          </p>
+
+          {/* Bio */}
+          {member.bio && (
+            <p className="text-xs text-[var(--color-text-secondary)]/70 leading-relaxed line-clamp-2">
+              {member.bio}
+            </p>
+          )}
         </div>
-        <p className="text-xs text-[var(--color-warn-orange)] font-medium mb-1">
-          {member.role}
-        </p>
-        <p className="text-xs text-[var(--color-text-muted)] leading-relaxed line-clamp-2">
-          {member.bio}
-        </p>
+
+        {/* Bottom connection point */}
+        {!isDirector && (
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--color-pipe-blue)]/40 hidden sm:block" />
+        )}
       </div>
     </motion.div>
   );
