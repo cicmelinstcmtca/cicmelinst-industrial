@@ -84,7 +84,7 @@ export function Marquee({ speed = 50, className = '', gap = 48 }: MarqueeProps) 
             <img
               src={client.logo}
               alt={client.name}
-              className="h-8 lg:h-10 w-auto object-contain opacity-50 hover:opacity-100 grayscale hover:grayscale-0 transition-all duration-300"
+              className="h-12 lg:h-14 w-auto object-contain opacity-50 hover:opacity-100 grayscale hover:grayscale-0 transition-all duration-300"
               loading="lazy"
             />
           </div>

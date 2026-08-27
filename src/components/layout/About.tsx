@@ -308,7 +308,7 @@ function IndustrialPillars() {
   const { values } = useCompany();
 
   const pillarColors = [
-    { accent: 'var(--color-warn-orange)', glow: 'rgba(255,102,0,0.15)', bg: 'rgba(255,102,0,0.05)' },
+    { accent: 'var(--color-accent-orange)', glow: 'rgba(255,102,0,0.15)', bg: 'rgba(255,102,0,0.05)' },
     { accent: 'var(--color-pipe-blue-glow)', glow: 'rgba(0,153,255,0.15)', bg: 'rgba(0,153,255,0.05)' },
     { accent: 'var(--color-insul-green)', glow: 'rgba(0,153,68,0.15)', bg: 'rgba(0,153,68,0.05)' },
   ];

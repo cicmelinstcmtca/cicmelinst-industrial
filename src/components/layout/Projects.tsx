@@ -54,41 +54,41 @@ export function Projects() {
         </div>
 
         {/* Asymmetric Grid */}
-        <div className="space-y-5">
-          {/* Featured: first project large */}
+        <div className="space-y-4">
+          {/* Featured: first project */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.5 }}
             onClick={() => setSelectedProject(featured.slug)}
-            className="group relative rounded-2xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 transition-all duration-300 bg-[var(--color-bg-panel)]"
+            className="group relative rounded-xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 transition-all duration-300 bg-[var(--color-bg-panel)]"
           >
-            <div className="aspect-[21/9] sm:aspect-[3/1] relative overflow-hidden">
+            <div className="aspect-[16/7] sm:aspect-[3/1] relative overflow-hidden">
               <img
                 src={featured.image}
                 alt={featured.title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-panel)] via-[var(--color-bg-panel)]/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-10">
+              <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 lg:p-8">
                 <span
-                  className="inline-block text-[10px] font-mono px-2 py-0.5 rounded-full border mb-3"
+                  className="inline-block text-[10px] font-mono px-2 py-0.5 rounded-full border mb-2"
                   style={{ color: CATEGORY_CONFIG[featured.category]?.color || '#3B82F6', borderColor: `${CATEGORY_CONFIG[featured.category]?.color || '#3B82F6'}33`, backgroundColor: `${CATEGORY_CONFIG[featured.category]?.color || '#3B82F6'}10` }}
                 >
                   {featured.category}
                 </span>
-                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--color-text-primary)] mb-2" style={{ fontFamily: 'var(--font-family-display)' }}>
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--color-text-primary)] mb-1" style={{ fontFamily: 'var(--font-family-display)' }}>
                   {featured.title}
                 </h3>
-                <p className="text-sm text-[var(--color-text-secondary)] max-w-xl">{featured.description}</p>
+                <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] max-w-xl line-clamp-2">{featured.description}</p>
               </div>
             </div>
             <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-pipe-blue-glow)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </motion.div>
 
-          {/* 2x2 grid */}
-          <div className="grid sm:grid-cols-2 gap-5">
+          {/* Grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {rest.map((project: Project, i: number) => (
               <ProjectCard key={project.id} project={project} index={i} onClick={() => setSelectedProject(project.slug)} />
             ))}
@@ -112,15 +112,15 @@ function ProjectCard({ project, index, onClick }: { project: Project; index: num
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
+      transition={{ duration: 0.4, delay: index * 0.04 }}
       onClick={onClick}
-      className="group relative rounded-2xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 transition-all duration-300 bg-[var(--color-bg-panel)]"
+      className="group relative rounded-xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 transition-all duration-300 bg-[var(--color-bg-panel)]"
     >
       {hasImage ? (
-        <div className="aspect-[16/10] relative overflow-hidden">
+        <div className="aspect-[16/9] relative overflow-hidden">
           <img
             src={project.image}
             alt={project.title}
@@ -129,45 +129,45 @@ function ProjectCard({ project, index, onClick }: { project: Project; index: num
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-panel)] via-transparent to-transparent" />
         </div>
       ) : (
-        <div className={`aspect-[16/10] relative bg-gradient-to-br ${config.gradient} overflow-hidden`}>
+        <div className={`aspect-[16/9] relative bg-gradient-to-br ${config.gradient} overflow-hidden`}>
           <div className="absolute inset-0 opacity-[0.04]" style={{
             backgroundImage: `linear-gradient(${config.color} 1px, transparent 1px), linear-gradient(90deg, ${config.color} 1px, transparent 1px)`,
-            backgroundSize: '24px 24px'
+            backgroundSize: '20px 20px'
           }} />
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-6xl opacity-20 group-hover:opacity-30 group-hover:scale-110 transition-all duration-500">{config.icon}</span>
+            <span className="text-5xl opacity-15 group-hover:opacity-25 group-hover:scale-110 transition-all duration-500">{config.icon}</span>
           </div>
         </div>
       )}
 
-      <div className="p-5">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="p-4">
+        <div className="flex items-center gap-2 mb-2">
           <span
-            className="text-[10px] font-mono px-2 py-0.5 rounded-full border"
+            className="text-[9px] font-mono px-1.5 py-0.5 rounded-full border"
             style={{ color: config.color, borderColor: `${config.color}33`, backgroundColor: `${config.color}10` }}
           >
             {project.category}
           </span>
         </div>
 
-        <h3 className="text-base font-semibold text-[var(--color-text-primary)] mb-2 group-hover:text-[var(--color-pipe-blue-glow)] transition-colors line-clamp-2" style={{ fontFamily: 'var(--font-family-display)' }}>
+        <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1 group-hover:text-[var(--color-pipe-blue-glow)] transition-colors line-clamp-2" style={{ fontFamily: 'var(--font-family-display)' }}>
           {project.title}
         </h3>
 
-        <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-4">
+        <p className="text-xs text-[var(--color-text-secondary)] line-clamp-2 mb-3">
           {project.description}
         </p>
 
-        <div className="flex items-center justify-between pt-3 border-t border-[var(--color-border-panel)]">
-          <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border-panel)]">
+          <div className="flex items-center gap-1 text-[10px] text-[var(--color-text-muted)]">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
             {project.location}
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <div className="flex items-center gap-1 text-[10px] text-[var(--color-text-muted)]">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
               <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
             </svg>

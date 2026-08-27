@@ -88,7 +88,7 @@ export function Header({ onSectionNavigate }: HeaderProps) {
               <img
                 src={logo || '/logo.png'}
                 alt={name}
-                className={`w-auto transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,102,0,0.3)] ${scrolled ? 'h-12' : 'h-16 lg:h-20'}`}
+                className={`w-auto transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(59,130,246,0.3)] ${scrolled ? 'h-12' : 'h-16 lg:h-20'}`}
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
@@ -101,10 +101,10 @@ export function Header({ onSectionNavigate }: HeaderProps) {
                 <button
                   key={link.id}
                   onClick={() => handleNav(link.id)}
-                  className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-lg ${
+                  className={`relative px-4 py-2 text-sm font-medium transition-all rounded-lg border border-transparent ${
                     activeSection === link.id
-                      ? 'text-[var(--color-warn-orange)]'
-                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-panel)]'
+                      ? 'text-[var(--color-warn-orange)] border-[var(--color-warn-orange)]/30'
+                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-panel)] hover:border-[var(--color-warn-orange)]/20'
                   }`}
                 >
                   {link.label}
@@ -215,10 +215,10 @@ export function Header({ onSectionNavigate }: HeaderProps) {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
                       onClick={() => handleNav(link.id)}
-                      className={`block w-full text-left px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                      className={`block w-full text-left px-4 py-3 text-sm font-medium rounded-lg transition-all border border-transparent ${
                         activeSection === link.id
-                          ? 'text-[var(--color-warn-orange)] bg-[var(--color-warn-orange)]/10'
-                          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-control)]'
+                          ? 'text-[var(--color-warn-orange)] bg-[var(--color-warn-orange)]/10 border-[var(--color-warn-orange)]/20'
+                          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-control)] hover:border-[var(--color-warn-orange)]/10'
                       }`}
                     >
                       {link.label}
