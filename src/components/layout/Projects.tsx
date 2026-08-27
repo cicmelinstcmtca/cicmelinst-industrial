@@ -1,69 +1,34 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useProjects } from '../../hooks';
-import { projectCategories } from '../../data';
 import type { Project } from '../../data/types';
 
-const CATEGORY_ICONS: Record<string, string> = {
-  'Electricidad': '⚡',
-  'Automatización': '🔧',
-  'Construcción': '🏗️',
-  'Eléctrico': '⚡',
-  'Alta Tensión': '🔌',
-  'Protección': '🛡️',
-  'Tierra': '🌍',
-  'Tendido': '🔗',
-  'Electrificación': '💡',
-  'Recuperación': '🔄',
-  'Mantenimiento': '🔩',
-};
-
-const CATEGORY_GRADIENTS: Record<string, string> = {
-  'Electricidad': 'from-amber-500/20 via-orange-500/10 to-transparent',
-  'Automatización': 'from-blue-500/20 via-cyan-500/10 to-transparent',
-  'Construcción': 'from-stone-500/20 via-gray-500/10 to-transparent',
-  'Eléctrico': 'from-yellow-500/20 via-amber-500/10 to-transparent',
-  'Alta Tensión': 'from-red-500/20 via-orange-500/10 to-transparent',
-  'Protección': 'from-emerald-500/20 via-green-500/10 to-transparent',
-  'Tierra': 'from-teal-500/20 via-cyan-500/10 to-transparent',
-  'Tendido': 'from-indigo-500/20 via-blue-500/10 to-transparent',
-  'Electrificación': 'from-yellow-400/20 via-amber-400/10 to-transparent',
-  'Recuperación': 'from-green-500/20 via-emerald-500/10 to-transparent',
-  'Mantenimiento': 'from-slate-500/20 via-gray-500/10 to-transparent',
+const CATEGORY_CONFIG: Record<string, { icon: string; gradient: string; color: string }> = {
+  'Eléctrico': { icon: '⚡', gradient: 'from-amber-500/15 via-orange-500/8 to-transparent', color: '#FF6600' },
+  'Automatización': { icon: '🔧', gradient: 'from-blue-500/15 via-cyan-500/8 to-transparent', color: '#0099FF' },
+  'Construcción': { icon: '🏗️', gradient: 'from-stone-500/15 via-gray-500/8 to-transparent', color: '#718096' },
+  'Protección': { icon: '🛡️', gradient: 'from-emerald-500/15 via-green-500/8 to-transparent', color: '#009944' },
+  'Mantenimiento': { icon: '🔩', gradient: 'from-slate-500/15 via-gray-500/8 to-transparent', color: '#9AA3AC' },
 };
 
 export function Projects() {
   const allProjects = useProjects();
-  const [activeCategory, setActiveCategory] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
-  const filtered = useMemo(() =>
-    activeCategory === 'all'
-      ? allProjects
-      : allProjects.filter((p: Project) => p.category === activeCategory),
-    [allProjects, activeCategory]
-  );
-
-  const selected = useMemo(() =>
-    allProjects.find((p: Project) => p.slug === selectedProject) || null,
-    [allProjects, selectedProject]
-  );
-
-  const hasImage = (project: Project) => {
-    return project.image && !project.image.includes('placeholder');
-  };
+  const selected = allProjects.find((p: Project) => p.slug === selectedProject) || null;
 
   return (
     <section id="projects" className="py-20 lg:py-32 bg-[var(--color-bg-control)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        {/* Header */}
+        <div className="text-center mb-16">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="inline-block text-xs font-mono text-[var(--color-warn-orange)] uppercase tracking-widest mb-4"
           >
-            Nuestros Proyectos
+            Portafolio
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -75,55 +40,26 @@ export function Projects() {
           >
             Proyectos Destacados
           </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="mt-4 text-lg text-[var(--color-text-secondary)] max-w-2xl mx-auto"
+          >
+            Más de 30 proyectos ejecutados en los sectores petrolero, petroquímico y energético venezolano.
+          </motion.p>
         </div>
 
-        {/* Category Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-2 mb-12"
-        >
-          <button
-            onClick={() => setActiveCategory('all')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-              activeCategory === 'all'
-                ? 'bg-[var(--color-warn-orange)] text-[var(--color-bg-control)]'
-                : 'bg-[var(--color-bg-panel)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] border border-[var(--color-border-panel)]'
-            }`}
-          >
-            Todos
-          </button>
-          {projectCategories.map((cat: string) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-                activeCategory === cat
-                  ? 'bg-[var(--color-warn-orange)] text-[var(--color-bg-control)]'
-                  : 'bg-[var(--color-bg-panel)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] border border-[var(--color-border-panel)]'
-              }`}
-            >
-              {cat}
-            </button>
+        {/* Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {allProjects.map((project: Project, i: number) => (
+            <ProjectCard key={project.id} project={project} index={i} onClick={() => setSelectedProject(project.slug)} />
           ))}
-        </motion.div>
-
-        {/* Mixed Grid: Image cards + Industrial cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
-          <AnimatePresence mode="wait">
-            {filtered.map((project: Project, i: number) => (
-              hasImage(project) ? (
-                <ImageCard key={project.id} project={project} index={i} onClick={() => setSelectedProject(project.slug)} />
-              ) : (
-                <IndustrialCard key={project.id} project={project} index={i} onClick={() => setSelectedProject(project.slug)} />
-              )
-            ))}
-          </AnimatePresence>
         </div>
       </div>
 
-      {/* Project Modal */}
+      {/* Modal */}
       <AnimatePresence>
         {selected && (
           <ProjectModal project={selected.slug} onClose={() => setSelectedProject(null)} allProjects={allProjects} />
@@ -133,118 +69,85 @@ export function Projects() {
   );
 }
 
-function ImageCard({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) {
+function ProjectCard({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) {
+  const config = CATEGORY_CONFIG[project.category] || CATEGORY_CONFIG['Eléctrico'];
+  const hasImage = project.image && !project.image.includes('placeholder');
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ delay: index * 0.05 }}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.4, delay: index * 0.04 }}
       onClick={onClick}
-      className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-warn-orange)]/30 transition-all"
+      className="group relative rounded-2xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-warn-orange)]/25 transition-all duration-300 bg-[var(--color-bg-panel)]"
     >
-      <img
-        src={project.image}
-        alt={project.title}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-control)] via-[var(--color-bg-control)]/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+      {/* Image or Gradient */}
+      {hasImage ? (
+        <div className="aspect-[16/10] relative overflow-hidden">
+          <img
+            src={project.image}
+            alt={project.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-panel)] via-transparent to-transparent" />
+        </div>
+      ) : (
+        <div className={`aspect-[16/10] relative bg-gradient-to-br ${config.gradient} overflow-hidden`}>
+          {/* Grid Pattern */}
+          <div className="absolute inset-0 opacity-[0.04]" style={{
+            backgroundImage: `linear-gradient(${config.color} 1px, transparent 1px), linear-gradient(90deg, ${config.color} 1px, transparent 1px)`,
+            backgroundSize: '24px 24px'
+          }} />
+          {/* Icon */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-6xl opacity-20 group-hover:opacity-30 group-hover:scale-110 transition-all duration-500">{config.icon}</span>
+          </div>
+        </div>
+      )}
 
-      <div className="absolute bottom-0 left-0 right-0 p-6">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-[10px] font-mono px-2 py-1 rounded-full bg-[var(--color-warn-orange)]/20 text-[var(--color-warn-orange)] border border-[var(--color-warn-orange)]/30">
+      {/* Content */}
+      <div className="p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <span
+            className="text-[10px] font-mono px-2 py-0.5 rounded-full border"
+            style={{ color: config.color, borderColor: `${config.color}33`, backgroundColor: `${config.color}10` }}
+          >
             {project.category}
           </span>
           <span className="text-[10px] font-mono text-[var(--color-text-muted)]">
             {project.year}
           </span>
         </div>
-        <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-1" style={{ fontFamily: 'var(--font-family-display)' }}>
+
+        <h3 className="text-base font-semibold text-[var(--color-text-primary)] mb-2 group-hover:text-[var(--color-warn-orange)] transition-colors line-clamp-2" style={{ fontFamily: 'var(--font-family-display)' }}>
           {project.title}
         </h3>
-        <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2">
+
+        <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-4">
           {project.description}
         </p>
-        <div className="flex items-center gap-2 mt-3 text-xs text-[var(--color-text-muted)]">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-          {project.location} • {project.client}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
-function IndustrialCard({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) {
-  const icon = CATEGORY_ICONS[project.category] || '⚙️';
-  const gradient = CATEGORY_GRADIENTS[project.category] || 'from-gray-500/20 via-gray-500/10 to-transparent';
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ delay: index * 0.05 }}
-      onClick={onClick}
-      className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-warn-orange)]/30 transition-all bg-[var(--color-bg-panel)]"
-    >
-      {/* Gradient Background */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
-
-      {/* Grid Pattern Overlay */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: `linear-gradient(var(--color-text-muted) 1px, transparent 1px), linear-gradient(90deg, var(--color-text-muted) 1px, transparent 1px)`,
-        backgroundSize: '20px 20px'
-      }} />
-
-      {/* Content */}
-      <div className="relative h-full flex flex-col justify-between p-6">
-        {/* Top */}
-        <div className="flex items-start justify-between">
-          <span className="text-4xl">{icon}</span>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono px-2 py-1 rounded-full bg-[var(--color-warn-orange)]/20 text-[var(--color-warn-orange)] border border-[var(--color-warn-orange)]/30">
-              {project.category}
-            </span>
-            <span className="text-[10px] font-mono text-[var(--color-text-muted)]">
-              {project.year}
-            </span>
+        <div className="flex items-center justify-between pt-3 border-t border-[var(--color-border-panel)]">
+          <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            {project.location}
           </div>
-        </div>
-
-        {/* Bottom */}
-        <div>
-          <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2 group-hover:text-[var(--color-warn-orange)] transition-colors" style={{ fontFamily: 'var(--font-family-display)' }}>
-            {project.title}
-          </h3>
-          <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-3">
-            {project.description}
-          </p>
-          <div className="flex items-center gap-4 text-xs text-[var(--color-text-muted)]">
-            <div className="flex items-center gap-1.5">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              {project.location}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-              </svg>
-              {project.client}
-            </div>
+          <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+            </svg>
+            {project.client}
           </div>
         </div>
       </div>
 
       {/* Hover Glow */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[var(--color-warn-orange)] to-transparent" />
-      </div>
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-warn-orange)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     </motion.div>
   );
 }
@@ -253,7 +156,7 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
   const selected = allProjects.find((p: Project) => p.slug === slug);
   if (!selected) return null;
 
-  const icon = CATEGORY_ICONS[selected.category] || '⚙️';
+  const config = CATEGORY_CONFIG[selected.category] || CATEGORY_CONFIG['Eléctrico'];
 
   return (
     <motion.div
@@ -273,10 +176,13 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
         {/* Header */}
         <div className="relative p-6 border-b border-[var(--color-border-panel)]">
           <div className="flex items-start gap-4">
-            <span className="text-4xl">{icon}</span>
+            <span className="text-4xl">{config.icon}</span>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-mono px-2 py-1 rounded-full bg-[var(--color-warn-orange)]/20 text-[var(--color-warn-orange)]">
+                <span
+                  className="text-xs font-mono px-2 py-0.5 rounded-full border"
+                  style={{ color: config.color, borderColor: `${config.color}33`, backgroundColor: `${config.color}10` }}
+                >
                   {selected.category}
                 </span>
                 <span className="text-xs text-[var(--color-text-muted)]">{selected.year}</span>
@@ -302,13 +208,11 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
 
         {/* Content */}
         <div className="p-6 space-y-6">
-          {/* Description */}
           <div>
             <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">Descripción</h4>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{selected.description}</p>
           </div>
 
-          {/* Technical Description */}
           {selected.technicalDescription && (
             <div className="p-4 bg-[var(--color-bg-control)] rounded-lg">
               <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">Detalle Técnico</h4>
@@ -316,7 +220,6 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
             </div>
           )}
 
-          {/* Services */}
           {selected.services && selected.services.length > 0 && (
             <div>
               <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Servicios</h4>
@@ -330,7 +233,6 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
             </div>
           )}
 
-          {/* Results */}
           {selected.results && selected.results.length > 0 && (
             <div>
               <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Resultados</h4>
@@ -345,7 +247,6 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
             </div>
           )}
 
-          {/* Technologies */}
           {selected.technologies && selected.technologies.length > 0 && (
             <div>
               <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Tecnologías</h4>
