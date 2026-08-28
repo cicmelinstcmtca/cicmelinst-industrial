@@ -69,7 +69,7 @@ function AboutHero() {
           >
             {[
               { value: '14+', label: 'Años' },
-              { value: '100+', label: 'Proyectos' },
+              { value: '30+', label: 'Proyectos' },
               { value: '3', label: 'Bases' },
             ].map((stat, i) => (
               <div key={i} className="flex items-baseline gap-2">

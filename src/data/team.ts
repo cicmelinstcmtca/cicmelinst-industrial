@@ -20,6 +20,15 @@ export const teamMembers: TeamMember[] = [
     email: ""
   },
   {
+    name: "Aurelio Amaya",
+    role: "Director de Operaciones",
+    photo: "/images/team/default.jpg",
+    bio: "Director de operaciones con amplia experiencia en la gestión y supervisión de proyectos industriales.",
+    location: "oficina",
+    phone: "",
+    email: ""
+  },
+  {
     name: "Marlene Mejia",
     role: "Directora Administrativa",
     photo: "/images/team/default.jpg",
