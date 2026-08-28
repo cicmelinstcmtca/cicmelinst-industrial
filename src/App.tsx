@@ -22,6 +22,18 @@ function AppContent() {
   const { mounted } = useTheme();
   const [woNumber] = useState(() => generateWorkOrderNumber());
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showUpdateBanner, setShowUpdateBanner] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setShowUpdateBanner(true);
+    window.addEventListener('sw-update', handler);
+    return () => window.removeEventListener('sw-update', handler);
+  }, []);
+
+  const handleUpdate = () => {
+    navigator.serviceWorker?.controller?.postMessage('skipWaiting');
+    window.location.reload();
+  };
 
   const handleSectionNavigate = useCallback((section: string) => {
     const targetId = section as SectionId;
@@ -139,6 +151,49 @@ function AppContent() {
       <div className="fixed bottom-2 left-2 z-10 text-[10px] text-[var(--color-text-muted)]/30 font-mono select-none pointer-events-none">
         WO: {woNumber}
       </div>
+
+      {/* Update Banner */}
+      <AnimatePresence>
+        {showUpdateBanner && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="fixed bottom-0 inset-x-0 z-50 p-4 bg-[var(--color-bg-panel)] border-t border-[var(--color-warn-orange)]/30 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]"
+          >
+            <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[var(--color-warn-orange)]/10 flex items-center justify-center flex-shrink-0">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-warn-orange)" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[var(--color-text-primary)]">Nueva versión disponible</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">Actualice para ver los últimos cambios</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowUpdateBanner(false)}
+                  className="px-4 py-2 text-xs font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+                >
+                  Después
+                </button>
+                <button
+                  onClick={handleUpdate}
+                  className="px-5 py-2 text-sm font-semibold bg-[var(--color-warn-orange)] text-[var(--color-bg-control)] rounded-xl hover:bg-[var(--color-warn-orange-glow)] transition-all active:scale-[0.98]"
+                >
+                  Actualizar
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
