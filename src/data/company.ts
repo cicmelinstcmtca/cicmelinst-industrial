@@ -49,13 +49,13 @@ export const companyConfig: CompanyConfig = {
   ],
   metrics: [
     { value: 14, suffix: "+", label: "Años de experiencia", icon: "Clock" },
-    { value: 100, suffix: "+", label: "Proyectos ejecutados", icon: "Building2" },
+    { value: 30, suffix: "+", label: "Proyectos ejecutados", icon: "Building2" },
     { value: 24, suffix: "", label: "Vehículos operativos", icon: "Truck" },
     { value: 3, suffix: "", label: "Bases operativas", icon: "MapPin" }
   ],
   stats: [
     { value: "14+", label: "Años" },
-    { value: "+100", label: "Proyectos" },
+    { value: "30+", label: "Proyectos" },
     { value: "24", label: "Vehículos" },
     { value: "100%", label: "Compromiso SIHO" }
   ],

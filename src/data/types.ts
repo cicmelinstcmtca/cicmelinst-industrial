@@ -56,7 +56,6 @@ export interface Project {
   id: string;
   title: string;
   client: string;
-  year: number;
   location: string;
   category: string;
   objective: string;

@@ -258,9 +258,6 @@ function ProjectCard({ project, index, onClick }: { project: Project; index: num
           >
             {project.category}
           </span>
-          <span className="text-[9px] font-mono text-[var(--color-text-muted)]">
-            {project.year}
-          </span>
         </div>
         <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1 group-hover:text-[var(--color-pipe-blue-glow)] transition-colors line-clamp-2" style={{ fontFamily: 'var(--font-family-display)' }}>
           {project.title}
@@ -321,8 +318,6 @@ function ProjectRow({ project, index, onClick }: { project: Project; index: numb
           <span>{project.client}</span>
           <span>•</span>
           <span>{project.location}</span>
-          <span>•</span>
-          <span>{project.year}</span>
         </div>
       </div>
 
@@ -382,10 +377,7 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs text-[var(--color-text-muted)]">•</span>
                 <span className="text-xs text-[var(--color-text-muted)]">{selected.location}</span>
-                <span className="text-xs text-[var(--color-text-muted)]">•</span>
-                <span className="text-xs text-[var(--color-text-muted)]">{selected.year}</span>
               </div>
               <h3 className="text-xl font-bold text-[var(--color-text-primary)]" style={{ fontFamily: 'var(--font-family-display)' }}>
                 {selected.title}
