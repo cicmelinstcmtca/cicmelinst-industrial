@@ -34,18 +34,12 @@ export function useTheme() {
       localStorage.setItem(THEME_KEY, theme);
     } catch { /* localStorage unavailable */ }
 
-    // Apply SCADA mode specific classes
-    document.documentElement.classList.toggle('scada-mode', theme === 'scada');
     document.documentElement.classList.remove('light-mode', 'dark-mode');
     document.documentElement.classList.add(`${theme}-mode`);
   }, [theme, mounted]);
 
   const toggleTheme = useCallback(() => {
-    setTheme(prev => {
-      if (prev === 'dark') return 'light';
-      if (prev === 'light') return 'scada';
-      return 'dark';
-    });
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   }, []);
 
   const setThemeMode = useCallback((mode: Theme) => {
@@ -54,11 +48,9 @@ export function useTheme() {
 
   const setDark = useCallback(() => setTheme('dark'), []);
   const setLight = useCallback(() => setTheme('light'), []);
-  const setScada = useCallback(() => setTheme('scada'), []);
 
   const isDark = theme === 'dark';
   const isLight = theme === 'light';
-  const isScada = theme === 'scada';
 
   return {
     theme,
@@ -66,10 +58,8 @@ export function useTheme() {
     setTheme: setThemeMode,
     setDark,
     setLight,
-    setScada,
     isDark,
     isLight,
-    isScada,
     mounted,
   };
 }

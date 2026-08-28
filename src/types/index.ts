@@ -1,6 +1,6 @@
 /** CICMELINST Industrial - Type Definitions */
 
-export type Theme = 'dark' | 'light' | 'scada';
+export type Theme = 'dark' | 'light';
 
 export type NodeStatus = 'energized' | 'deenergized' | 'maintenance' | 'fault';
 
