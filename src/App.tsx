@@ -5,14 +5,13 @@ import { useTheme } from './hooks';
 import { generateWorkOrderNumber } from './utils/helpers';
 import { LazyLoad, LazyProjects, LazyCapabilities, LazyTeam, LazyContact } from './components/LazyLoad';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { MarqueeSection } from './components/ui';
+import { ClientesPremium } from './components/ui/ClientesPremium';
 
 const SECTIONS = [
   { id: 'hero', label: 'Inicio' },
   { id: 'capabilities', label: 'Servicios' },
   { id: 'projects', label: 'Proyectos' },
   { id: 'about', label: 'Nosotros' },
-  { id: 'clients', label: 'Clientes' },
   { id: 'contact', label: 'Contacto' },
 ] as const;
 
@@ -117,10 +116,6 @@ function AppContent() {
           <About />
         </ErrorBoundary>
 
-        <div>
-          <MarqueeSection />
-        </div>
-
         <ErrorBoundary sectionName="Equipo">
           <LazyLoad>
             <LazyTeam />
@@ -131,6 +126,10 @@ function AppContent() {
           <LazyLoad>
             <LazyContact />
           </LazyLoad>
+        </ErrorBoundary>
+
+        <ErrorBoundary sectionName="Clientes">
+          <ClientesPremium />
         </ErrorBoundary>
       </main>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
-import { useCompany, useCountUp } from '../../hooks';
+import { useCompany } from '../../hooks';
 
 /* ─── Bloque 1: Hero Narrativo ─── */
 function AboutHero() {
@@ -415,78 +415,7 @@ function IndustrialPillars() {
   );
 }
 
-/* ─── Bloque 4: Métricas con Contador Animado ─── */
-function AnimatedMetrics() {
-  const { metrics } = useCompany();
-
-  const metricIcons = [
-    // Clock
-    <svg key="clock" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-    </svg>,
-    // Building
-    <svg key="building" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <rect x="4" y="2" width="16" height="20" rx="2" /><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M8 10h.01M16 10h.01M12 10h.01M8 14h.01M16 14h.01M12 14h.01" />
-    </svg>,
-    // Truck
-    <svg key="truck" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
-    </svg>,
-    // MapPin
-    <svg key="map" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-    </svg>,
-  ];
-
-  return (
-    <section className="py-16 bg-[var(--color-bg-panel)] border-y border-[var(--color-border-panel)]/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {metrics.map((metric, i) => (
-            <MetricCard key={i} metric={metric} icon={metricIcons[i % metricIcons.length]} delay={i * 0.1} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function MetricCard({ metric, icon, delay }: { metric: { value: number; suffix: string; label: string }; icon: React.ReactNode; delay: number }) {
-  const { count, ref } = useCountUp(metric.value, 2000);
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay }}
-      className="relative text-center p-6"
-    >
-      {/* Icon */}
-      <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-[var(--color-warn-orange)]/10 flex items-center justify-center text-[var(--color-warn-orange)]">
-        {icon}
-      </div>
-
-      {/* Number */}
-      <div className="text-4xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-2" style={{ fontFamily: 'var(--font-family-display)' }}>
-        {count}{metric.suffix}
-      </div>
-
-      {/* Label */}
-      <div className="text-xs text-[var(--color-text-muted)] font-mono uppercase tracking-widest">
-        {metric.label}
-      </div>
-
-      {/* Separator (not on last) */}
-      {delay < 0.3 && (
-        <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-12 bg-[var(--color-border-panel)]" />
-      )}
-    </motion.div>
-  );
-}
-
-/* ─── Bloque 5: Mapa de Capacidades ─── */
+/* ─── Bloque 4: Mapa de Capacidades ─── */
 function CapabilitiesMap() {
   const sectors = [
     { name: 'Petrolero', image: '/images/hero-1.jpg', detail: '15+ proyectos en refinación y extracción' },
@@ -572,7 +501,6 @@ export function About() {
       <AboutHero />
       <LifeTimeline />
       <IndustrialPillars />
-      <AnimatedMetrics />
       <CapabilitiesMap />
     </section>
   );
