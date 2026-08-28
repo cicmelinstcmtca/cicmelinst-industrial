@@ -117,6 +117,10 @@ function AppContent() {
           <About />
         </ErrorBoundary>
 
+        <ErrorBoundary sectionName="Clientes">
+          <ClientesPremium />
+        </ErrorBoundary>
+
         <ErrorBoundary sectionName="Equipo">
           <LazyLoad>
             <LazyTeam />
@@ -127,10 +131,6 @@ function AppContent() {
           <LazyLoad>
             <LazyContact />
           </LazyLoad>
-        </ErrorBoundary>
-
-        <ErrorBoundary sectionName="Clientes">
-          <ClientesPremium />
         </ErrorBoundary>
       </main>
 

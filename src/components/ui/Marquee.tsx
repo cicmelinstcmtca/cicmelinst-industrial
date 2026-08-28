@@ -31,7 +31,7 @@ export function Marquee({ speed = 50, className = '', gap = 48 }: MarqueeProps) 
         const deltaTime = currentTime - lastTimeRef.current;
         lastTimeRef.current = currentTime;
 
-        const contentWidth = clonedClients.length * 240 + (clonedClients.length - 1) * gap;
+        const contentWidth = clonedClients.length * 280 + (clonedClients.length - 1) * gap;
         positionRef.current -= (speed / 1000) * deltaTime;
 
         if (Math.abs(positionRef.current) >= contentWidth / 3) {
@@ -74,13 +74,13 @@ export function Marquee({ speed = 50, className = '', gap = 48 }: MarqueeProps) 
         {clonedClients.map((client, index) => (
           <div
             key={`${client.name}-${index}`}
-            className="flex-shrink-0 flex items-center justify-center px-8 py-6 rounded-2xl bg-[var(--color-bg-control)]/80 backdrop-blur-sm border border-[var(--color-border-panel)]/50 hover:border-[var(--color-warn-orange)]/30 hover:bg-[var(--color-bg-panel)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_0_15px_rgba(255,102,0,0.05)] transition-all duration-500 ease-out"
+            className="flex-shrink-0 flex items-center justify-center px-4 py-3 rounded-xl bg-[var(--color-bg-control)]/90 backdrop-blur-sm border border-[var(--color-border-panel)]/40 hover:border-[var(--color-warn-orange)]/50 hover:bg-[var(--color-bg-panel)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] transition-all duration-500 ease-out"
             role="listitem"
           >
             <img
               src={client.logo}
               alt={client.name}
-              className="h-20 lg:h-28 w-auto max-w-[200px] object-contain opacity-40 hover:opacity-100 grayscale hover:grayscale-0 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.1)] transition-all duration-500"
+              className="h-28 lg:h-36 w-auto max-w-[280px] object-contain opacity-70 brightness-110 contrast-125 hover:opacity-100 hover:brightness-100 hover:contrast-100 grayscale hover:grayscale-0 hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.15)] transition-all duration-500"
               loading="lazy"
             />
           </div>
