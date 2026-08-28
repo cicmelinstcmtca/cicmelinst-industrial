@@ -6,3 +6,4 @@ export { GaugeCard } from './GaugeCard';
 export { SpecSheet, SpecGrid } from './SpecSheet';
 export { SchematicNode, SingleLineDiagram, DEFAULT_SUBSTATION_LAYOUT, NODE_SECTION_MAP } from './SchematicNode';
 export { MaintenanceLog, MaintenanceLogCompact } from './MaintenanceLog';
+export { Marquee } from './Marquee';

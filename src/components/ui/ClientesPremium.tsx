@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { useClients } from '../../hooks';
+import { Marquee } from './Marquee';
 
 const CERTIFICATIONS = [
   { label: 'Certificación SIHO', icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' },
@@ -9,16 +9,14 @@ const CERTIFICATIONS = [
 ];
 
 export function ClientesPremium() {
-  const clients = useClients();
-
   return (
-    <section className="py-20 lg:py-32 bg-[var(--color-bg-panel)] relative overflow-hidden">
+    <section id="clients" className="py-20 lg:py-32 bg-[var(--color-bg-panel)] relative overflow-hidden">
       {/* Dot pattern background */}
       <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, var(--color-text-muted) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -48,36 +46,8 @@ export function ClientesPremium() {
           </motion.p>
         </div>
 
-        {/* Client Logos Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 mb-16">
-          {clients.map((client, i) => (
-            <motion.div
-              key={client.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="group relative p-6 lg:p-8 rounded-2xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] hover:border-[var(--color-warn-orange)]/30 hover:shadow-[0_0_30px_rgba(255,102,0,0.08)] transition-all duration-500"
-            >
-              {/* Hover glow */}
-              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-b from-[var(--color-warn-orange)]/5 to-transparent" />
-
-              <div className="relative flex items-center justify-center h-16 lg:h-20">
-                <img
-                  src={client.logo}
-                  alt={client.name}
-                  className="max-h-full max-w-full object-contain opacity-30 group-hover:opacity-100 grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-110"
-                  loading="lazy"
-                />
-              </div>
-
-              {/* Client name on hover */}
-              <div className="absolute bottom-3 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-[10px] font-mono text-[var(--color-text-muted)] uppercase tracking-wider">{client.name}</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {/* Marquee */}
+        <Marquee speed={30} gap={32} />
 
         {/* Certification Badges */}
         <motion.div
@@ -85,7 +55,7 @@ export function ClientesPremium() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
-          className="flex flex-wrap justify-center gap-6 lg:gap-10 pt-8 border-t border-[var(--color-border-panel)]/50"
+          className="flex flex-wrap justify-center gap-6 lg:gap-10 pt-10 mt-10 border-t border-[var(--color-border-panel)]/50"
         >
           {CERTIFICATIONS.map((cert) => (
             <div key={cert.label} className="flex items-center gap-2.5 text-xs text-[var(--color-text-muted)]">
