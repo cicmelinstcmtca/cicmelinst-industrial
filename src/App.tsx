@@ -19,7 +19,7 @@ const SECTIONS = [
 type SectionId = typeof SECTIONS[number]['id'];
 
 function AppContent() {
-  const { theme, mounted } = useTheme();
+  const { mounted } = useTheme();
   const [woNumber] = useState(() => generateWorkOrderNumber());
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -72,7 +72,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-[var(--color-bg-control)]" data-theme={theme}>
+    <div className="min-h-[100dvh] bg-[var(--color-bg-control)]">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[var(--color-warn-orange)] focus:text-[var(--color-bg-control)] focus:rounded-lg focus:font-semibold">
         Saltar al contenido
       </a>
