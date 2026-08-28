@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "postbuild": "node scripts/generate-sitemap.mjs",
+    "postbuild": "node scripts/generate-sitemap.mjs && node scripts/generate-sw.mjs",
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
