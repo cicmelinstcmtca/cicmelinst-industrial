@@ -1,6 +1,7 @@
 import type { TeamMember } from './types';
 
 export const teamMembers: TeamMember[] = [
+  // ── Nivel 1: Directores ──
   {
     name: "Juan Amaya",
     role: "Director General",
@@ -28,6 +29,7 @@ export const teamMembers: TeamMember[] = [
     phone: "",
     email: ""
   },
+  // ── Nivel 2: Directora + Gerentes ──
   {
     name: "Marlene Mejia",
     role: "Directora Administrativa",
@@ -64,6 +66,7 @@ export const teamMembers: TeamMember[] = [
     phone: "",
     email: ""
   },
+  // ── Nivel 3: Gerente + Coordinadora ──
   {
     name: "Lic. Ana Salazar",
     role: "Gerente de Administración",

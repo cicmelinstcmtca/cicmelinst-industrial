@@ -22,7 +22,7 @@ function getRoleLabel(role: string): string {
   if (role.includes('Gerente PYA')) return 'Gerente PYA';
   if (role.includes('Gerente Técnico')) return 'Gerente Técnico';
   if (role.includes('Gerente de Administración')) return 'Gerente de Administración';
-  if (role.includes('Coord')) return 'Coordinadora';
+  if (role.includes('Coord')) return 'Coord. SIHO-A';
   return role;
 }
 
@@ -30,19 +30,23 @@ export function Team() {
   const teamMembers = useTeam();
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
-  // Separate directors and staff
-  const directors = teamMembers.filter(m => m.role.includes('Director'));
-  const staff = teamMembers.filter(m => !m.role.includes('Director'));
+  // ── Nivel 1: Directores (fila 1) ──
+  const directors = teamMembers.filter(m =>
+    m.name === 'Juan Amaya' || m.name === 'Juan A. Gomez' || m.name === 'Aurelio Amaya'
+  );
 
-  // Group staff by director (for visual grouping)
-  // Juan Amaya (General) -> Marlene, Ligia
-  // Juan A. Gomez (Producción) -> Rosanny, Editza
-  // Aurelio Amaya (Operaciones) -> Victor, Ana
-  const directorGroups: Record<string, TeamMember[]> = {
-    'Juan Amaya': [staff[0], staff[6]].filter(Boolean),
-    'Juan A. Gomez': [staff[1], staff[2]].filter(Boolean),
-    'Aurelio Amaya': [staff[3], staff[4]].filter(Boolean),
-  };
+  // ── Nivel 2: Directora Admin + Gerentes (fila 2) ──
+  const level2 = teamMembers.filter(m =>
+    m.name === 'Marlene Mejia' ||
+    m.name === 'Ing. Rosanny Ortiz' ||
+    m.name === 'Ing. Editza Ibarra' ||
+    m.name === 'Ing. Victor Vargas'
+  );
+
+  // ── Nivel 3: Gerente Admin + Coordinadora (fila 3) ──
+  const level3 = teamMembers.filter(m =>
+    m.name === 'Lic. Ana Salazar' || m.name === 'TSU. Ligia Regis'
+  );
 
   return (
     <section id="team" className="py-20 lg:py-32 bg-[var(--color-bg-control)] relative overflow-hidden">
@@ -88,10 +92,12 @@ export function Team() {
           </motion.p>
         </div>
 
-        {/* Org Chart */}
-        <div className="relative max-w-6xl mx-auto">
-          {/* Directors Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
+        {/* ═══════════════════════════════════════════════════════════════
+            ORG CHART
+            ═══════════════════════════════════════════════════════════════ */}
+        <div className="relative max-w-5xl mx-auto">
+          {/* ── Fila 1: Directores ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-2">
             {directors.map((member: TeamMember, i: number) => (
               <motion.div
                 key={member.name}
@@ -99,43 +105,83 @@ export function Team() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="relative"
               >
                 <DirectorCard member={member} onClick={() => setSelectedMember(member)} />
-
-                {/* Connection line down (hidden on mobile, shown on sm+) */}
-                <div className="hidden sm:block absolute left-1/2 -translate-x-1/2 top-full w-px h-6 bg-[var(--color-pipe-blue)]/20" />
               </motion.div>
             ))}
           </div>
 
-          {/* Horizontal connector line */}
-          <div className="hidden sm:block relative h-px mx-auto max-w-4xl mb-6">
+          {/* ── Líneas verticales de Fila 1 ── */}
+          <div className="hidden sm:flex justify-center gap-[calc(33.33%-40px)] sm:gap-[calc(33.33%-50px)] mb-2 px-8">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" />
+            ))}
+          </div>
+
+          {/* ── Línea horizontal conectora ── */}
+          <div className="hidden sm:block relative h-px mx-auto max-w-3xl mb-2">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--color-pipe-blue)]/25 to-transparent" />
+          </div>
+
+          {/* ── Líneas verticales a Fila 2 ── */}
+          <div className="hidden sm:flex justify-center gap-[calc(25%-30px)] sm:gap-[calc(25%-40px)] mb-2 px-4">
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" />
+            ))}
+          </div>
+
+          {/* ── Fila 2: Directora Admin + Gerentes ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-2">
+            {level2.map((member: TeamMember, i: number) => (
+              <motion.div
+                key={member.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
+              >
+                <ManagerCard member={member} onClick={() => setSelectedMember(member)} />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* ── Líneas verticales de Fila 2 ── */}
+          <div className="hidden sm:flex justify-center gap-[calc(25%-30px)] sm:gap-[calc(25%-40px)] mb-2 px-4">
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" />
+            ))}
+          </div>
+
+          {/* ── Línea horizontal conectora 2 ── */}
+          <div className="hidden sm:block relative h-px mx-auto max-w-3xl mb-2">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--color-pipe-blue)]/20 to-transparent" />
           </div>
 
-          {/* Staff Groups — 3 columns under each director */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-            {directors.map((director) => (
-              <div key={director.name} className="space-y-3">
-                {directorGroups[director.name]?.map((member: TeamMember, i: number) => (
-                  <motion.div
-                    key={member.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
-                  >
-                    <StaffCard member={member} onClick={() => setSelectedMember(member)} />
-                  </motion.div>
-                ))}
-              </div>
+          {/* ── Líneas verticales a Fila 3 ── */}
+          <div className="hidden sm:flex justify-center gap-[calc(50%-40px)] mb-2">
+            {[0, 1].map(i => (
+              <div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" />
+            ))}
+          </div>
+
+          {/* ── Fila 3: Gerente Admin + Coordinadora ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-2xl mx-auto">
+            {level3.map((member: TeamMember, i: number) => (
+              <motion.div
+                key={member.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5 + i * 0.08, duration: 0.4 }}
+              >
+                <StaffCard member={member} onClick={() => setSelectedMember(member)} />
+              </motion.div>
             ))}
           </div>
 
           {/* Blueprint footer */}
           <div className="hidden lg:flex justify-between mt-10 text-[9px] font-mono text-[var(--color-text-muted)]/30 uppercase tracking-[0.2em]">
-            <span>Rev. 04 — {new Date().toLocaleDateString('es-VE', { year: 'numeric', month: 'short' })}</span>
+            <span>Rev. 05 — {new Date().toLocaleDateString('es-VE', { year: 'numeric', month: 'short' })}</span>
             <span>CICMELINST C.A. — Diagrama Organizacional</span>
             <span>Dibujo No. CIC-ORG-001</span>
           </div>
@@ -152,38 +198,42 @@ export function Team() {
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   TARJETAS POR NIVEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 function DirectorCard({ member, onClick }: { member: TeamMember; onClick: () => void }) {
   const initials = getInitials(member.name);
 
   return (
     <motion.div
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -6, scale: 1.02 }}
       onClick={onClick}
       className="group relative cursor-pointer"
     >
-      <div className="relative overflow-hidden rounded-xl border border-[var(--color-pipe-blue-glow)]/30 bg-[var(--color-bg-panel)] transition-all duration-300 hover:border-[var(--color-pipe-blue-glow)]/50 hover:shadow-xl hover:shadow-[var(--color-pipe-blue)]/10">
-        {/* Top accent gradient */}
-        <div className="h-1 bg-gradient-to-r from-[var(--color-pipe-blue-glow)] via-[var(--color-pipe-blue)] to-[var(--color-pipe-blue-glow)]" />
+      <div className="relative overflow-hidden rounded-xl border border-[var(--color-pipe-blue-glow)]/30 bg-[var(--color-bg-panel)] transition-all duration-300 hover:border-[var(--color-pipe-blue-glow)]/60 hover:shadow-2xl hover:shadow-[var(--color-pipe-blue)]/15">
+        {/* Top accent */}
+        <div className="h-1.5 bg-gradient-to-r from-[var(--color-pipe-blue-glow)] via-[var(--color-pipe-blue)] to-[var(--color-pipe-blue-glow)]" />
 
         <div className="p-5">
-          {/* Initials */}
+          {/* Initials + Badge */}
           <div className="flex items-start justify-between mb-4">
             <div className="relative">
               <span
-                className="text-5xl font-bold leading-none"
+                className="text-5xl lg:text-6xl font-bold leading-none"
                 style={{
                   fontFamily: 'var(--font-family-display)',
                   color: 'var(--color-pipe-blue)',
-                  opacity: 0.1,
+                  opacity: 0.08,
                   position: 'absolute',
-                  top: '-8px',
-                  left: '-4px',
+                  top: '-10px',
+                  left: '-6px',
                 }}
               >
                 {initials}
               </span>
               <span
-                className="text-5xl font-bold leading-none relative z-10"
+                className="text-5xl lg:text-6xl font-bold leading-none relative z-10"
                 style={{
                   fontFamily: 'var(--font-family-display)',
                   color: 'var(--color-pipe-blue-glow)',
@@ -192,7 +242,7 @@ function DirectorCard({ member, onClick }: { member: TeamMember; onClick: () => 
                 {initials}
               </span>
             </div>
-            <span className="text-[8px] font-mono px-2 py-0.5 rounded border border-[var(--color-pipe-blue-glow)]/20 text-[var(--color-pipe-blue-glow)] uppercase tracking-widest">
+            <span className="text-[8px] font-mono px-2 py-0.5 rounded border border-[var(--color-pipe-blue-glow)]/25 text-[var(--color-pipe-blue-glow)] uppercase tracking-widest">
               Director
             </span>
           </div>
@@ -213,8 +263,77 @@ function DirectorCard({ member, onClick }: { member: TeamMember; onClick: () => 
           </p>
         </div>
 
-        {/* Hover indicator */}
+        {/* Hover bar */}
         <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--color-pipe-blue-glow)] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+      </div>
+    </motion.div>
+  );
+}
+
+function ManagerCard({ member, onClick }: { member: TeamMember; onClick: () => void }) {
+  const initials = getInitials(member.name);
+  const isDirectora = member.role.includes('Directora');
+
+  return (
+    <motion.div
+      whileHover={{ y: -4, scale: 1.01 }}
+      onClick={onClick}
+      className="group relative cursor-pointer"
+    >
+      <div className={`relative overflow-hidden rounded-xl border transition-all duration-300 ${
+        isDirectora
+          ? 'border-[var(--color-pipe-blue)]/20 bg-[var(--color-bg-panel)] hover:border-[var(--color-pipe-blue-glow)]/40 hover:shadow-lg'
+          : 'border-[var(--color-border-panel)] bg-[var(--color-bg-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 hover:shadow-lg'
+      }`}>
+        {/* Top accent */}
+        <div className={`h-1 ${isDirectora ? 'bg-[var(--color-pipe-blue-glow)]/60' : 'bg-[var(--color-border-panel)] group-hover:bg-[var(--color-pipe-blue-glow)]/40'} transition-colors duration-300`} />
+
+        <div className="p-4">
+          {/* Initials + Badge */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="relative">
+              <span
+                className="text-4xl font-bold leading-none"
+                style={{
+                  fontFamily: 'var(--font-family-display)',
+                  color: 'var(--color-pipe-blue)',
+                  opacity: 0.08,
+                  position: 'absolute',
+                  top: '-6px',
+                  left: '-4px',
+                }}
+              >
+                {initials}
+              </span>
+              <span
+                className="text-4xl font-bold leading-none relative z-10"
+                style={{
+                  fontFamily: 'var(--font-family-display)',
+                  color: isDirectora ? 'var(--color-pipe-blue-glow)' : 'var(--color-text-primary)',
+                }}
+              >
+                {initials}
+              </span>
+            </div>
+            <span className={`text-[8px] font-mono px-1.5 py-0.5 rounded border uppercase tracking-widest ${
+              isDirectora
+                ? 'border-[var(--color-pipe-blue-glow)]/25 text-[var(--color-pipe-blue-glow)]'
+                : 'border-[var(--color-border-panel)] text-[var(--color-text-muted)]'
+            }`}>
+              {isDirectora ? 'Directora' : 'Gerente'}
+            </span>
+          </div>
+
+          {/* Name */}
+          <h4 className="text-sm font-bold text-[var(--color-text-primary)] mb-0.5 leading-tight group-hover:text-[var(--color-pipe-blue-glow)] transition-colors" style={{ fontFamily: 'var(--font-family-display)' }}>
+            {member.name}
+          </h4>
+
+          {/* Role */}
+          <p className={`text-xs font-medium ${isDirectora ? 'text-[var(--color-pipe-blue-glow)]' : 'text-[var(--color-text-muted)]'}`}>
+            {getRoleLabel(member.role)}
+          </p>
+        </div>
       </div>
     </motion.div>
   );
@@ -225,39 +344,65 @@ function StaffCard({ member, onClick }: { member: TeamMember; onClick: () => voi
 
   return (
     <motion.div
-      whileHover={{ x: 4 }}
+      whileHover={{ y: -3, scale: 1.01 }}
       onClick={onClick}
       className="group relative cursor-pointer"
     >
-      <div className="flex items-center gap-3 p-3 rounded-lg border border-[var(--color-border-panel)] bg-[var(--color-bg-panel)] transition-all duration-300 hover:border-[var(--color-pipe-blue-glow)]/30 hover:bg-[var(--color-bg-panel)]/80">
-        {/* Initials circle */}
-        <div className="w-10 h-10 rounded-full bg-[var(--color-pipe-blue)]/5 border border-[var(--color-pipe-blue)]/10 flex items-center justify-center flex-shrink-0 group-hover:border-[var(--color-pipe-blue-glow)]/30 transition-colors">
-          <span className="text-sm font-bold text-[var(--color-text-muted)] group-hover:text-[var(--color-pipe-blue-glow)] transition-colors" style={{ fontFamily: 'var(--font-family-display)' }}>
-            {initials}
-          </span>
-        </div>
+      <div className="relative overflow-hidden rounded-xl border border-[var(--color-border-panel)] bg-[var(--color-bg-panel)] transition-all duration-300 hover:border-[var(--color-pipe-blue-glow)]/30 hover:shadow-lg">
+        {/* Top accent */}
+        <div className="h-1 bg-[var(--color-border-panel)] group-hover:bg-[var(--color-pipe-blue-glow)]/40 transition-colors duration-300" />
 
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-semibold text-[var(--color-text-primary)] truncate group-hover:text-[var(--color-pipe-blue-glow)] transition-colors" style={{ fontFamily: 'var(--font-family-display)' }}>
+        <div className="p-4">
+          {/* Initials + Badge */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="relative">
+              <span
+                className="text-4xl font-bold leading-none"
+                style={{
+                  fontFamily: 'var(--font-family-display)',
+                  color: 'var(--color-pipe-blue)',
+                  opacity: 0.08,
+                  position: 'absolute',
+                  top: '-6px',
+                  left: '-4px',
+                }}
+              >
+                {initials}
+              </span>
+              <span
+                className="text-4xl font-bold leading-none relative z-10 text-[var(--color-text-primary)]"
+                style={{ fontFamily: 'var(--font-family-display)' }}
+              >
+                {initials}
+              </span>
+            </div>
+            <span className="text-[8px] font-mono px-1.5 py-0.5 rounded border border-[var(--color-border-panel)] text-[var(--color-text-muted)] uppercase tracking-widest">
+              Gerente
+            </span>
+          </div>
+
+          {/* Name */}
+          <h4 className="text-sm font-bold text-[var(--color-text-primary)] mb-0.5 leading-tight group-hover:text-[var(--color-pipe-blue-glow)] transition-colors" style={{ fontFamily: 'var(--font-family-display)' }}>
             {member.name}
           </h4>
-          <p className="text-[11px] text-[var(--color-text-muted)] truncate">
+
+          {/* Role */}
+          <p className="text-xs font-medium text-[var(--color-text-muted)]">
             {getRoleLabel(member.role)}
           </p>
         </div>
-
-        {/* Arrow */}
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--color-text-muted)]/30 group-hover:text-[var(--color-pipe-blue-glow)] transition-colors flex-shrink-0">
-          <path d="M9 18l6-6-6-6" />
-        </svg>
       </div>
     </motion.div>
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   MODAL DE DETALLE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 function MemberModal({ member, onClose }: { member: TeamMember; onClose: () => void }) {
   const initials = getInitials(member.name);
+  const isDirector = member.role.includes('Director') || member.role.includes('Directora');
 
   return (
     <motion.div
@@ -275,7 +420,7 @@ function MemberModal({ member, onClose }: { member: TeamMember; onClose: () => v
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="relative p-6 bg-gradient-to-b from-[var(--color-pipe-blue)]/5 to-transparent">
+        <div className={`relative p-6 ${isDirector ? 'bg-gradient-to-b from-[var(--color-pipe-blue)]/8 to-transparent' : 'bg-gradient-to-b from-[var(--color-bg-control)]/50 to-transparent'}`}>
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full bg-[var(--color-bg-control)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-control)]"
@@ -287,9 +432,8 @@ function MemberModal({ member, onClose }: { member: TeamMember; onClose: () => v
           </button>
 
           <div className="flex items-center gap-4">
-            {/* Large initials */}
-            <div className="w-16 h-16 rounded-2xl bg-[var(--color-pipe-blue)]/10 border border-[var(--color-pipe-blue)]/20 flex items-center justify-center">
-              <span className="text-2xl font-bold text-[var(--color-pipe-blue-glow)]" style={{ fontFamily: 'var(--font-family-display)' }}>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${isDirector ? 'bg-[var(--color-pipe-blue)]/10 border border-[var(--color-pipe-blue)]/20' : 'bg-[var(--color-bg-control)] border border-[var(--color-border-panel)]'}`}>
+              <span className={`text-2xl font-bold ${isDirector ? 'text-[var(--color-pipe-blue-glow)]' : 'text-[var(--color-text-muted)]'}`} style={{ fontFamily: 'var(--font-family-display)' }}>
                 {initials}
               </span>
             </div>
@@ -297,7 +441,7 @@ function MemberModal({ member, onClose }: { member: TeamMember; onClose: () => v
               <h3 className="text-xl font-bold text-[var(--color-text-primary)]" style={{ fontFamily: 'var(--font-family-display)' }}>
                 {member.name}
               </h3>
-              <p className="text-sm text-[var(--color-pipe-blue-glow)]">
+              <p className={`text-sm ${isDirector ? 'text-[var(--color-pipe-blue-glow)]' : 'text-[var(--color-text-muted)]'}`}>
                 {getRoleLabel(member.role)}
               </p>
             </div>
