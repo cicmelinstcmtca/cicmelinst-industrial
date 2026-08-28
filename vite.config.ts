@@ -2,8 +2,21 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+function cacheBuster() {
+  return {
+    name: 'cache-buster',
+    transformIndexHtml(html: string) {
+      const timestamp = Date.now()
+      return html.replace(
+        /(<script type="module"[^>]*src=")([^"]+)("><\/script>)/,
+        `$1$2?v=${timestamp}$3`
+      )
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), cacheBuster()],
   optimizeDeps: {
     include: ['three', '@react-three/fiber', '@react-three/drei', 'motion'],
   },
