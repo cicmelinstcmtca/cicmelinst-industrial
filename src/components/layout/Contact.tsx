@@ -2,36 +2,63 @@ import { useState, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useCompany } from '../../hooks';
 
+type ContactMode = 'cotizacion' | 'asesoria';
+
 interface FormData {
   name: string;
+  email: string;
   phone: string;
   company: string;
   service: string;
+  topic: string;
   message: string;
+  mode: ContactMode;
 }
 
-const INITIAL_FORM: FormData = { name: '', phone: '', company: '', service: '', message: '' };
+const INITIAL_FORM: FormData = { name: '', email: '', phone: '', company: '', service: '', topic: '', message: '', mode: 'cotizacion' };
 
 const SERVICES = [
-  { id: 'electrical', label: 'Montaje Eléctrico', icon: '⚡', desc: 'Subestaciones, distribución, líneas de transmisión' },
+  { id: 'electrical', label: 'Montaje Eléctrico', icon: '⚡', desc: 'Subestaciones, distribución, líneas' },
   { id: 'automation', label: 'Automatización', icon: '⚙️', desc: 'SCADA, PLC, sistemas de control' },
-  { id: 'civil', label: 'Construcción Civil', icon: '🏗️', desc: 'Obras civiles, cimentaciones, estructuras' },
+  { id: 'civil', label: 'Construcción Civil', icon: '🏗️', desc: 'Obras civiles, cimentaciones' },
   { id: 'instrumentation', label: 'Instrumentación', icon: '📊', desc: 'Calibración, medición, transmisores' },
   { id: 'maintenance', label: 'Mantenimiento', icon: '🔧', desc: 'Preventivo, correctivo, predictivo' },
   { id: 'consulting', label: 'Consultoría', icon: '📋', desc: 'Estudios, diseños, supervisión' },
 ];
 
-const DELIVERABLES = [
-  { icon: '📐', title: 'Propuesta Técnica', desc: 'Alcance, metodología y cronograma detallado' },
-  { icon: '💰', title: 'Presupuesto', desc: 'Costos transparentes por partida y fase' },
-  { icon: '📅', title: 'Cronograma', desc: 'Plan de ejecución con hitos y entregables' },
-  { icon: '🛡️', title: 'Plan SIHO', desc: 'Procedimientos de seguridad y control' },
+const TOPICS = [
+  { id: 'electrical', label: 'Eléctrico', icon: '⚡' },
+  { id: 'automation', label: 'Automatización y Control', icon: '⚙️' },
+  { id: 'instrumentation', label: 'Instrumentación', icon: '📊' },
+  { id: 'civil', label: 'Obras Civiles', icon: '🏗️' },
+  { id: 'maintenance', label: 'Mantenimiento', icon: '🔧' },
+  { id: 'general', label: 'General / Otro', icon: '📋' },
 ];
 
-const STEPS = [
-  { num: '01', title: 'Cuéntanos', desc: 'Describe tu proyecto en el formulario' },
-  { num: '02', title: 'Analizamos', desc: 'Nuestro equipo evalúa el alcance técnico' },
-  { num: '03', title: 'Propuesta', desc: 'Recibe propuesta técnica y comercial' },
+const COTIZACION_DELIVERABLES = [
+  { icon: '📐', title: 'Propuesta Técnica', desc: 'Alcance, metodología y cronograma' },
+  { icon: '💰', title: 'Presupuesto', desc: 'Costos transparentes por partida' },
+  { icon: '📅', title: 'Cronograma', desc: 'Plan de ejecución con hitos' },
+  { icon: '🛡️', title: 'Plan SIHO', desc: 'Seguridad y control de calidad' },
+];
+
+const ASESORIA_DELIVERABLES = [
+  { icon: '🔍', title: 'Análisis Técnico', desc: 'Evaluación del estado actual' },
+  { icon: '💡', title: 'Recomendaciones', desc: 'Soluciones personalizadas' },
+  { icon: '📋', title: 'Plan de Acción', desc: 'Pasos claros para ejecutar' },
+  { icon: '🤝', title: 'Seguimiento', desc: 'Acompañamiento continuo' },
+];
+
+const COTIZACION_STEPS = [
+  { num: '01', title: 'Cuéntanos', desc: 'Describe tu proyecto' },
+  { num: '02', title: 'Analizamos', desc: 'Evalúamos el alcance técnico' },
+  { num: '03', title: 'Propuesta', desc: 'Recibe tu cotización' },
+];
+
+const ASESORIA_STEPS = [
+  { num: '01', title: 'Cuéntanos', desc: 'Describe tu necesidad' },
+  { num: '02', title: 'Evaluamos', desc: 'Revisamos tu situación' },
+  { num: '03', title: 'Resolvemos', desc: 'Te orientamos sin compromiso' },
 ];
 
 export function Contact() {
@@ -41,17 +68,26 @@ export function Contact() {
   const [form, setForm] = useState<FormData>(INITIAL_FORM);
   const [hoveredDeliverable, setHoveredDeliverable] = useState<number | null>(null);
 
+  const isCotizacion = form.mode === 'cotizacion';
+  const steps = isCotizacion ? COTIZACION_STEPS : ASESORIA_STEPS;
+  const deliverables = isCotizacion ? COTIZACION_DELIVERABLES : ASESORIA_DELIVERABLES;
+
   const updateField = (field: keyof FormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const setMode = (mode: ContactMode) => {
+    setForm((prev) => ({ ...prev, mode, service: '', topic: '' }));
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    const serviceLabel = SERVICES.find(s => s.id === form.service)?.label || form.service;
-    const subject = encodeURIComponent(`Cotización: ${serviceLabel}`);
+
+    const modeLabel = isCotizacion ? 'Cotización' : 'Asesoría';
+    const subject = encodeURIComponent(`Solicitud de ${modeLabel}: ${isCotizacion ? SERVICES.find(s => s.id === form.service)?.label : TOPICS.find(t => t.id === form.topic)?.label}`);
     const body = encodeURIComponent(
-      `Nombre: ${form.name}\nTeléfono: ${form.phone}\nEmpresa: ${form.company || 'N/A'}\nServicio: ${serviceLabel}\n\n${form.message}`
+      `Tipo: ${modeLabel}\nNombre: ${form.name}\nCorreo: ${form.email}\nTeléfono: ${form.phone}\nEmpresa: ${form.company || 'N/A'}\n${isCotizacion ? 'Servicio' : 'Tema'}: ${isCotizacion ? SERVICES.find(s => s.id === form.service)?.label : TOPICS.find(t => t.id === form.topic)?.label}\n\n${form.message}`
     );
     window.open(`mailto:${company.email}?subject=${subject}&body=${body}`);
     setTimeout(() => { setSubmitted(true); setSending(false); }, 500);
@@ -80,7 +116,7 @@ export function Contact() {
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--color-text-primary)] max-w-3xl mx-auto leading-tight"
             style={{ fontFamily: 'var(--font-family-display)' }}
           >
-            Solicite una Cotización
+            Solicite Asesoría o Cotización
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -89,8 +125,7 @@ export function Contact() {
             transition={{ delay: 0.2 }}
             className="mt-4 text-lg text-[var(--color-text-secondary)] max-w-2xl mx-auto"
           >
-            Cuéntenos sobre su proyecto y le responderemos con una propuesta técnica
-            y comercial personalizada.
+            Cuéntenos sobre su necesidad y le responderemos con la mejor orientación técnica.
           </motion.p>
         </div>
 
@@ -102,9 +137,9 @@ export function Contact() {
           transition={{ delay: 0.3 }}
           className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-16 max-w-4xl mx-auto"
         >
-          {STEPS.map((step, i) => (
+          {steps.map((step, i) => (
             <motion.div
-              key={i}
+              key={step.num}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -151,16 +186,16 @@ export function Contact() {
                     <motion.polyline points="22 4 12 14.01 9 11.01" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.3, delay: 0.8 }} />
                   </motion.svg>
                   <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2" style={{ fontFamily: 'var(--font-family-display)' }}>
-                    Mensaje Enviado
+                    {isCotizacion ? 'Cotización Enviada' : 'Asesoría Solicitada'}
                   </h3>
                   <p className="text-[var(--color-text-secondary)] mb-6">
-                    Nos pondremos en contacto con usted en las próximas horas.
+                    Recibimos su solicitud. Nuestro equipo le responderá a la brevedad.
                   </p>
                   <button
                     onClick={() => { setSubmitted(false); setForm(INITIAL_FORM); }}
                     className="px-6 py-3 border border-[var(--color-pipe-blue-glow)] text-[var(--color-pipe-blue-glow)] rounded-xl hover:bg-[var(--color-pipe-blue-glow)] hover:text-[var(--color-bg-control)] transition-all font-medium active:scale-[0.98]"
                   >
-                    Enviar otro mensaje
+                    Enviar otra solicitud
                   </button>
                 </motion.div>
               ) : (
@@ -172,29 +207,91 @@ export function Contact() {
                   onSubmit={handleSubmit}
                   className="space-y-5"
                 >
-                  {/* Interactive Service Selector */}
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-3">Tipo de Servicio *</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {SERVICES.map((service) => (
-                        <button
-                          key={service.id}
-                          type="button"
-                          onClick={() => updateField('service', service.id)}
-                          className={`p-3 rounded-xl border text-left transition-all duration-200 ${
-                            form.service === service.id
-                              ? 'border-[var(--color-warn-orange)] bg-[var(--color-warn-orange)]/10 shadow-[0_0_15px_rgba(59,130,246,0.1)]'
-                              : 'border-[var(--color-border-panel)] bg-[var(--color-bg-control)] hover:border-[var(--color-warn-orange)]/30 hover:bg-[var(--color-bg-control)]'
-                          }`}
-                        >
-                          <span className="text-lg mb-1 block">{service.icon}</span>
-                          <span className="text-xs font-medium text-[var(--color-text-primary)] block">{service.label}</span>
-                          <span className="text-[10px] text-[var(--color-text-muted)] block mt-0.5">{service.desc}</span>
-                        </button>
-                      ))}
-                    </div>
+                  {/* Mode Toggle */}
+                  <div className="flex gap-3 p-1.5 rounded-2xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)]">
+                    <button
+                      type="button"
+                      onClick={() => setMode('cotizacion')}
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                        isCotizacion
+                          ? 'bg-[var(--color-warn-orange)] text-[var(--color-bg-control)] shadow-lg shadow-[var(--color-warn-orange)]/20'
+                          : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-panel)]'
+                      }`}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                      </svg>
+                      Cotización
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode('asesoria')}
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                        !isCotizacion
+                          ? 'bg-[var(--color-pipe-blue-glow)] text-[var(--color-bg-control)] shadow-lg shadow-[var(--color-pipe-blue-glow)]/20'
+                          : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-panel)]'
+                      }`}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                      </svg>
+                      Asesoría
+                    </button>
                   </div>
 
+                  {/* Service / Topic Selector */}
+                  {isCotizacion ? (
+                    <div>
+                      <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-3">Tipo de Servicio *</label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {SERVICES.map((service) => (
+                          <button
+                            key={service.id}
+                            type="button"
+                            onClick={() => updateField('service', service.id)}
+                            className={`p-3 rounded-xl border text-left transition-all duration-200 ${
+                              form.service === service.id
+                                ? 'border-[var(--color-warn-orange)] bg-[var(--color-warn-orange)]/10 shadow-[0_0_15px_rgba(59,130,246,0.1)]'
+                                : 'border-[var(--color-border-panel)] bg-[var(--color-bg-control)] hover:border-[var(--color-warn-orange)]/30'
+                            }`}
+                          >
+                            <span className="text-lg mb-1 block">{service.icon}</span>
+                            <span className="text-xs font-medium text-[var(--color-text-primary)] block">{service.label}</span>
+                            <span className="text-[10px] text-[var(--color-text-muted)] block mt-0.5">{service.desc}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-3">Área de Interés *</label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {TOPICS.map((topic) => (
+                          <button
+                            key={topic.id}
+                            type="button"
+                            onClick={() => updateField('topic', topic.id)}
+                            className={`flex items-center gap-2 p-3 rounded-xl border text-left transition-all duration-200 ${
+                              form.topic === topic.id
+                                ? 'border-[var(--color-pipe-blue-glow)] bg-[var(--color-pipe-blue-glow)]/10 shadow-[0_0_15px_rgba(0,164,255,0.1)]'
+                                : 'border-[var(--color-border-panel)] bg-[var(--color-bg-control)] hover:border-[var(--color-pipe-blue-glow)]/30'
+                            }`}
+                          >
+                            <span className="text-lg">{topic.icon}</span>
+                            <span className="text-xs font-medium text-[var(--color-text-primary)]">{topic.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Name + Email */}
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">Nombre *</label>
@@ -208,6 +305,21 @@ export function Contact() {
                       />
                     </div>
                     <div>
+                      <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">Correo Electrónico *</label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="correo@empresa.com"
+                        value={form.email}
+                        onChange={(e) => updateField('email', e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Phone + Company */}
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div>
                       <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">Teléfono *</label>
                       <input
                         type="tel"
@@ -218,51 +330,58 @@ export function Contact() {
                         className={inputClass}
                       />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">Empresa</label>
+                      <input
+                        type="text"
+                        placeholder="Nombre de la empresa"
+                        value={form.company}
+                        onChange={(e) => updateField('company', e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
                   </div>
 
+                  {/* Message */}
                   <div>
-                    <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">Empresa</label>
-                    <input
-                      type="text"
-                      placeholder="Nombre de la empresa"
-                      value={form.company}
-                      onChange={(e) => updateField('company', e.target.value)}
-                      className={inputClass}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">Descripción del Proyecto *</label>
+                    <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
+                      {isCotizacion ? 'Descripción del Proyecto *' : 'Describa su Necesidad *'}
+                    </label>
                     <textarea
                       required
                       rows={5}
-                      placeholder="Describa el alcance del proyecto, ubicación, y cualquier requerimiento técnico especial..."
+                      placeholder={isCotizacion
+                        ? 'Describa el alcance del proyecto, ubicación, y cualquier requerimiento técnico especial...'
+                        : 'Cuéntenos su situación actual, qué necesita resolver, y cualquier detalle relevante...'
+                      }
                       value={form.message}
                       onChange={(e) => updateField('message', e.target.value)}
                       className={`${inputClass} resize-none`}
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={sending || !form.service}
-                    className="w-full px-6 py-3.5 bg-[var(--color-warn-orange)] text-[var(--color-bg-control)] font-semibold rounded-xl hover:bg-[var(--color-warn-orange-glow)] transition-all hover:shadow-lg hover:shadow-[var(--color-warn-orange)]/20 active:scale-[0.98] relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {sending ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
-                          <path d="M12 2a10 10 0 0 1 10 10" strokeOpacity="0.75" />
-                        </svg>
-                        Enviando...
-                      </span>
-                    ) : 'Enviar Solicitud'}
-                    <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
-                  </button>
-
-                  <p className="text-xs text-[var(--color-text-muted)] text-center">
-                    Le responderemos en menos de 24 horas hábiles.
-                  </p>
+                  {/* Submit */}
+                  <div>
+                    <button
+                      type="submit"
+                      disabled={sending || (isCotizacion ? !form.service : !form.topic)}
+                      className="w-full px-6 py-3.5 bg-[var(--color-warn-orange)] text-[var(--color-bg-control)] font-semibold rounded-xl hover:bg-[var(--color-warn-orange-glow)] transition-all hover:shadow-lg hover:shadow-[var(--color-warn-orange)]/20 active:scale-[0.98] relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {sending ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                            <path d="M12 2a10 10 0 0 1 10 10" strokeOpacity="0.75" />
+                          </svg>
+                          Enviando...
+                        </span>
+                      ) : isCotizacion ? 'Enviar Cotización' : 'Enviar Asesoría'}
+                      <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+                    </button>
+                    <p className="text-xs text-[var(--color-text-muted)] text-center mt-3">
+                      Responderemos a la brevedad de ser posible.
+                    </p>
+                  </div>
                 </motion.form>
               )}
             </AnimatePresence>
@@ -275,7 +394,7 @@ export function Contact() {
             viewport={{ once: true }}
             className="lg:col-span-2 space-y-5"
           >
-            {/* Response Time - Interactive */}
+            {/* Response Time */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -283,7 +402,7 @@ export function Contact() {
               transition={{ delay: 0.2 }}
               className="p-5 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] hover:border-[var(--color-insul-green)]/30 hover:shadow-[0_0_25px_rgba(0,255,136,0.08)] transition-all duration-500 group"
             >
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="w-12 h-12 rounded-xl bg-[var(--color-insul-green)]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-insul-green)" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />
@@ -292,39 +411,22 @@ export function Contact() {
                 </div>
                 <div>
                   <div className="text-xs text-[var(--color-text-muted)] font-mono uppercase tracking-wider">Tiempo de Respuesta</div>
-                  <motion.div
-                    className="text-2xl font-bold text-[var(--color-insul-green)]"
-                    style={{ fontFamily: 'var(--font-family-display)' }}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
-                  >
-                    &lt; 24h
-                  </motion.div>
+                  <div className="text-lg font-bold text-[var(--color-insul-green)]" style={{ fontFamily: 'var(--font-family-display)' }}>
+                    A la Brevedad
+                  </div>
                 </div>
               </div>
-              <div className="h-2 bg-[var(--color-bg-panel)] rounded-full overflow-hidden mb-3">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-[var(--color-insul-green)] to-[var(--color-insul-green-glow)] rounded-full relative"
-                  initial={{ width: 0 }}
-                  whileInView={{ width: '85%' }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.5, delay: 0.5, ease: 'easeOut' }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2s_ease-in-out_infinite]" />
-                </motion.div>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-[10px] text-[var(--color-text-muted)]">Promedio en días hábiles</p>
-                <div className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-insul-green)] animate-pulse" />
-                  <span className="text-[10px] text-[var(--color-insul-green)] font-mono">Activo</span>
-                </div>
+              <div className="h-px bg-gradient-to-r from-transparent via-[var(--color-insul-green)]/20 to-transparent my-3" />
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                Nuestro equipo técnico revisará su solicitud y le responderá con la mayor brevedad posible, priorizando la atención oportuna.
+              </p>
+              <div className="flex items-center gap-1.5 mt-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-insul-green)] animate-pulse" />
+                <span className="text-[10px] text-[var(--color-insul-green)] font-mono">En línea</span>
               </div>
             </motion.div>
 
-            {/* What You Get - Interactive */}
+            {/* What You Get */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -332,42 +434,52 @@ export function Contact() {
               transition={{ delay: 0.3 }}
               className="p-5 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)]"
             >
-              <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4" style={{ fontFamily: 'var(--font-family-display)' }}>
-                Nuestra propuesta incluye
-              </h4>
-              <div className="space-y-2">
-                {DELIVERABLES.map((item, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.4 + i * 0.1 }}
-                    className="flex items-start gap-3 p-2.5 rounded-lg cursor-default transition-all duration-200 hover:bg-[var(--color-bg-panel)] group/item"
-                    onMouseEnter={() => setHoveredDeliverable(i)}
-                    onMouseLeave={() => setHoveredDeliverable(null)}
-                  >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                      hoveredDeliverable === i
-                        ? 'bg-[var(--color-warn-orange)]/15 scale-110'
-                        : 'bg-[var(--color-bg-panel)]'
-                    }`}>
-                      <span className="text-sm">{item.icon}</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-[var(--color-text-primary)] group-hover/item:text-[var(--color-warn-orange)] transition-colors">{item.title}</div>
-                      <div className="text-[10px] text-[var(--color-text-muted)] leading-relaxed">{item.desc}</div>
-                    </div>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`mt-1 flex-shrink-0 transition-all duration-200 ${
-                      hoveredDeliverable === i
-                        ? 'text-[var(--color-warn-orange)] opacity-100 translate-x-0'
-                        : 'text-[var(--color-text-muted)] opacity-0 -translate-x-2'
-                    }`}>
-                      <path d="M9 18l6-6-6-6" />
-                    </svg>
-                  </motion.div>
-                ))}
-              </div>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={form.mode}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4" style={{ fontFamily: 'var(--font-family-display)' }}>
+                    {isCotizacion ? 'Su propuesta incluye' : 'Nuestra asesoría incluye'}
+                  </h4>
+                  <div className="space-y-2">
+                    {deliverables.map((item, i) => (
+                      <motion.div
+                        key={item.title}
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.4 + i * 0.1 }}
+                        className="flex items-start gap-3 p-2.5 rounded-lg cursor-default transition-all duration-200 hover:bg-[var(--color-bg-panel)] group/item"
+                        onMouseEnter={() => setHoveredDeliverable(i)}
+                        onMouseLeave={() => setHoveredDeliverable(null)}
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                          hoveredDeliverable === i
+                            ? 'bg-[var(--color-warn-orange)]/15 scale-110'
+                            : 'bg-[var(--color-bg-panel)]'
+                        }`}>
+                          <span className="text-sm">{item.icon}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-medium text-[var(--color-text-primary)] group-hover/item:text-[var(--color-warn-orange)] transition-colors">{item.title}</div>
+                          <div className="text-[10px] text-[var(--color-text-muted)] leading-relaxed">{item.desc}</div>
+                        </div>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`mt-1 flex-shrink-0 transition-all duration-200 ${
+                          hoveredDeliverable === i
+                            ? 'text-[var(--color-warn-orange)] opacity-100 translate-x-0'
+                            : 'text-[var(--color-text-muted)] opacity-0 -translate-x-2'
+                        }`}>
+                          <path d="M9 18l6-6-6-6" />
+                        </svg>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </motion.div>
 
             {/* Social Links */}
