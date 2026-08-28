@@ -31,8 +31,14 @@ function AppContent() {
   }, []);
 
   const handleUpdate = () => {
-    navigator.serviceWorker?.controller?.postMessage('skipWaiting');
-    window.location.reload();
+    if (navigator.serviceWorker?.controller) {
+      navigator.serviceWorker.controller.postMessage('skipWaiting');
+    }
+    caches.keys().then((names) => {
+      Promise.all(names.map((name) => caches.delete(name)));
+    }).finally(() => {
+      window.location.reload();
+    });
   };
 
   const handleSectionNavigate = useCallback((section: string) => {

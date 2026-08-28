@@ -1,4 +1,4 @@
-const BUILD_ID = new Date().toISOString();
+const SW_VERSION = '2.0.0';
 
 self.addEventListener('install', () => {
   self.skipWaiting();
