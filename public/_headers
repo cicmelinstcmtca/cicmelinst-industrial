@@ -25,8 +25,6 @@
   Cache-Control: public, max-age=2592000, immutable
 
 # Favicon, logo
-/favicon.svg
-  Cache-Control: public, max-age=86400
 /logo.png
   Cache-Control: public, max-age=86400
 
