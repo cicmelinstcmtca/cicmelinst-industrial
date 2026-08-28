@@ -4,12 +4,13 @@ import { useCompany } from '../../hooks';
 
 interface FormData {
   name: string;
+  phone: string;
   company: string;
   service: string;
   message: string;
 }
 
-const INITIAL_FORM: FormData = { name: '', company: '', service: '', message: '' };
+const INITIAL_FORM: FormData = { name: '', phone: '', company: '', service: '', message: '' };
 
 const SERVICES = [
   { id: 'electrical', label: 'Montaje Eléctrico', icon: '⚡', desc: 'Subestaciones, distribución, líneas de transmisión' },
@@ -38,6 +39,7 @@ export function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [form, setForm] = useState<FormData>(INITIAL_FORM);
+  const [hoveredDeliverable, setHoveredDeliverable] = useState<number | null>(null);
 
   const updateField = (field: keyof FormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -49,7 +51,7 @@ export function Contact() {
     const serviceLabel = SERVICES.find(s => s.id === form.service)?.label || form.service;
     const subject = encodeURIComponent(`Cotización: ${serviceLabel}`);
     const body = encodeURIComponent(
-      `Nombre: ${form.name}\nEmpresa: ${form.company || 'N/A'}\nServicio: ${serviceLabel}\n\n${form.message}`
+      `Nombre: ${form.name}\nTeléfono: ${form.phone}\nEmpresa: ${form.company || 'N/A'}\nServicio: ${serviceLabel}\n\n${form.message}`
     );
     window.open(`mailto:${company.email}?subject=${subject}&body=${body}`);
     setTimeout(() => { setSubmitted(true); setSending(false); }, 500);
@@ -101,8 +103,15 @@ export function Contact() {
           className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-16 max-w-4xl mx-auto"
         >
           {STEPS.map((step, i) => (
-            <div key={i} className="relative flex items-start gap-4 p-4 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)]">
-              <span className="text-2xl font-bold text-[var(--color-warn-orange)]/20" style={{ fontFamily: 'var(--font-family-display)' }}>
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 + i * 0.1 }}
+              className="relative flex items-start gap-4 p-4 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] hover:border-[var(--color-warn-orange)]/30 hover:shadow-[0_0_20px_rgba(59,130,246,0.08)] transition-all duration-300 group"
+            >
+              <span className="text-2xl font-bold text-[var(--color-warn-orange)]/30 group-hover:text-[var(--color-warn-orange)]/60 transition-colors" style={{ fontFamily: 'var(--font-family-display)' }}>
                 {step.num}
               </span>
               <div>
@@ -110,9 +119,9 @@ export function Contact() {
                 <p className="text-xs text-[var(--color-text-muted)]">{step.desc}</p>
               </div>
               {i < 2 && (
-                <div className="hidden sm:block absolute top-1/2 -right-4 w-4 h-px bg-[var(--color-border-panel)]" />
+                <div className="hidden sm:block absolute top-1/2 -right-4 w-4 h-px bg-[var(--color-border-panel)] group-hover:bg-[var(--color-warn-orange)]/30 transition-colors" />
               )}
-            </div>
+            </motion.div>
           ))}
         </motion.div>
 
@@ -199,15 +208,27 @@ export function Contact() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">Empresa</label>
+                      <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">Teléfono *</label>
                       <input
-                        type="text"
-                        placeholder="Nombre de la empresa"
-                        value={form.company}
-                        onChange={(e) => updateField('company', e.target.value)}
+                        type="tel"
+                        required
+                        placeholder="+58 424 123 4567"
+                        value={form.phone}
+                        onChange={(e) => updateField('phone', e.target.value)}
                         className={inputClass}
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">Empresa</label>
+                    <input
+                      type="text"
+                      placeholder="Nombre de la empresa"
+                      value={form.company}
+                      onChange={(e) => updateField('company', e.target.value)}
+                      className={inputClass}
+                    />
                   </div>
 
                   <div>
@@ -254,70 +275,100 @@ export function Contact() {
             viewport={{ once: true }}
             className="lg:col-span-2 space-y-5"
           >
-            {/* WhatsApp CTA */}
-            <a
-              href={`https://wa.me/${company.whatsapp}?text=Hola,%20me%20interesa%20una%20cotizaci%C3%B3n%20para%20un%20proyecto.`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-4 p-5 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 hover:bg-[#25D366]/20 hover:border-[#25D366]/50 transition-all duration-300 group"
+            {/* Response Time - Interactive */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="p-5 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] hover:border-[var(--color-insul-green)]/30 hover:shadow-[0_0_25px_rgba(0,255,136,0.08)] transition-all duration-500 group"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#25D366] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                </svg>
-              </div>
-              <div>
-                <div className="text-sm font-semibold text-[var(--color-text-primary)]">¿Prefieres WhatsApp?</div>
-                <div className="text-xs text-[var(--color-text-muted)]">Respuesta inmediata durante horario laboral</div>
-              </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-auto text-[var(--color-text-muted)] group-hover:text-[#25D366] group-hover:translate-x-1 transition-all">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </a>
-
-            {/* Response Time */}
-            <div className="p-5 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)]">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-[var(--color-insul-green)]/10 flex items-center justify-center">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-insul-green)" strokeWidth="2">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-insul-green)]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-insul-green)" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12 6 12 12 16 14" />
                   </svg>
                 </div>
                 <div>
-                  <div className="text-xs text-[var(--color-text-muted)] font-mono uppercase">Tiempo de Respuesta</div>
-                  <div className="text-lg font-bold text-[var(--color-insul-green)]">&lt; 24 horas</div>
+                  <div className="text-xs text-[var(--color-text-muted)] font-mono uppercase tracking-wider">Tiempo de Respuesta</div>
+                  <motion.div
+                    className="text-2xl font-bold text-[var(--color-insul-green)]"
+                    style={{ fontFamily: 'var(--font-family-display)' }}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+                  >
+                    &lt; 24h
+                  </motion.div>
                 </div>
               </div>
-              <div className="h-1.5 bg-[var(--color-bg-control)] rounded-full overflow-hidden">
+              <div className="h-2 bg-[var(--color-bg-panel)] rounded-full overflow-hidden mb-3">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-[var(--color-insul-green)] to-[var(--color-insul-green-glow)] rounded-full"
+                  className="h-full bg-gradient-to-r from-[var(--color-insul-green)] to-[var(--color-insul-green-glow)] rounded-full relative"
                   initial={{ width: 0 }}
                   whileInView={{ width: '85%' }}
                   viewport={{ once: true }}
-                  transition={{ duration: 1.5, delay: 0.5 }}
-                />
+                  transition={{ duration: 1.5, delay: 0.5, ease: 'easeOut' }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2s_ease-in-out_infinite]" />
+                </motion.div>
               </div>
-              <p className="text-[10px] text-[var(--color-text-muted)] mt-2">Promedio de respuesta en días hábiles</p>
-            </div>
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] text-[var(--color-text-muted)]">Promedio en días hábiles</p>
+                <div className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-insul-green)] animate-pulse" />
+                  <span className="text-[10px] text-[var(--color-insul-green)] font-mono">Activo</span>
+                </div>
+              </div>
+            </motion.div>
 
-            {/* What You Get */}
-            <div className="p-5 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)]">
+            {/* What You Get - Interactive */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="p-5 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)]"
+            >
               <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4" style={{ fontFamily: 'var(--font-family-display)' }}>
                 Nuestra propuesta incluye
               </h4>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
                 {DELIVERABLES.map((item, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <span className="text-sm mt-0.5">{item.icon}</span>
-                    <div>
-                      <div className="text-xs font-medium text-[var(--color-text-primary)]">{item.title}</div>
-                      <div className="text-[10px] text-[var(--color-text-muted)]">{item.desc}</div>
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4 + i * 0.1 }}
+                    className="flex items-start gap-3 p-2.5 rounded-lg cursor-default transition-all duration-200 hover:bg-[var(--color-bg-panel)] group/item"
+                    onMouseEnter={() => setHoveredDeliverable(i)}
+                    onMouseLeave={() => setHoveredDeliverable(null)}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                      hoveredDeliverable === i
+                        ? 'bg-[var(--color-warn-orange)]/15 scale-110'
+                        : 'bg-[var(--color-bg-panel)]'
+                    }`}>
+                      <span className="text-sm">{item.icon}</span>
                     </div>
-                  </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-[var(--color-text-primary)] group-hover/item:text-[var(--color-warn-orange)] transition-colors">{item.title}</div>
+                      <div className="text-[10px] text-[var(--color-text-muted)] leading-relaxed">{item.desc}</div>
+                    </div>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`mt-1 flex-shrink-0 transition-all duration-200 ${
+                      hoveredDeliverable === i
+                        ? 'text-[var(--color-warn-orange)] opacity-100 translate-x-0'
+                        : 'text-[var(--color-text-muted)] opacity-0 -translate-x-2'
+                    }`}>
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Social Links */}
             <div className="flex gap-3">
