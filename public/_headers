@@ -7,25 +7,18 @@
   Pragma: no-cache
   Expires: 0
 
-# Service Worker
-/sw.js
-  Cache-Control: no-cache, no-store, must-revalidate
-  Service-Worker-Allowed: /
-
 # Assets con hash (JS, CSS) - cache largo
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Imágenes - cache moderado
+# Imǭgenes - cache moderado
 /images/*
   Cache-Control: public, max-age=2592000, immutable
 
 /logos/*
   Cache-Control: public, max-age=2592000, immutable
 
-# Manifest, favicon, logo
-/manifest.webmanifest
-  Cache-Control: public, max-age=86400
+# Favicon, logo
 /favicon.svg
   Cache-Control: public, max-age=86400
 /logo.png
