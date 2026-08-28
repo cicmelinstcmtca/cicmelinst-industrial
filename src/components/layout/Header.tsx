@@ -63,9 +63,9 @@ export function Header({ onSectionNavigate }: HeaderProps) {
   return (
     <>
       {/* Scroll Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-[2px] bg-transparent pointer-events-none">
+      <div className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-transparent pointer-events-none">
         <motion.div
-          className="h-full bg-gradient-to-r from-[var(--color-warn-orange)] to-[var(--color-warn-orange-glow)]"
+          className="h-full bg-gradient-to-r from-[var(--color-warn-orange)] to-[var(--color-warn-orange-glow)] shadow-[0_0_10px_rgba(59,130,246,0.5),0_0_20px_rgba(59,130,246,0.2)]"
           style={{ width: `${scrollProgress}%` }}
           transition={{ duration: 0.1 }}
         />
@@ -81,19 +81,22 @@ export function Header({ onSectionNavigate }: HeaderProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`flex items-center justify-between transition-all duration-300 ${scrolled ? 'h-16' : 'h-20'}`}>
             {/* Logo */}
-            <button
+            <motion.button
               onClick={() => handleNav('hero')}
               className="flex items-center group flex-shrink-0"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
             >
               <img
                 src={logo || '/logo.png'}
                 alt={name}
-                className={`w-auto transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(59,130,246,0.3)] ${scrolled ? 'h-12' : 'h-16 lg:h-20'}`}
+                className={`w-auto transition-all duration-300 hover:drop-shadow-[0_0_12px_rgba(59,130,246,0.4)] ${scrolled ? 'h-12' : 'h-16 lg:h-20'}`}
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
-            </button>
+            </motion.button>
 
             {/* Desktop Nav */}
             <nav ref={navRef} className="hidden lg:flex items-center gap-1 relative" aria-label="Navegación principal">
@@ -103,18 +106,18 @@ export function Header({ onSectionNavigate }: HeaderProps) {
                   onClick={() => handleNav(link.id)}
                   className={`relative px-4 py-2 text-sm font-medium transition-all rounded-lg border border-transparent ${
                     activeSection === link.id
-                      ? 'text-[var(--color-warn-orange)] border-[var(--color-warn-orange)]/30'
-                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-panel)] hover:border-[var(--color-warn-orange)]/20'
+                      ? 'text-[var(--color-warn-orange)]'
+                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
                   }`}
                 >
-                  {link.label}
                   {activeSection === link.id && (
                     <motion.div
                       layoutId="nav-indicator"
-                      className="absolute bottom-0 left-2 right-2 h-0.5 bg-[var(--color-warn-orange)] rounded-full"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      className="absolute inset-0 rounded-lg bg-[var(--color-warn-orange)]/10 border border-[var(--color-warn-orange)]/20"
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     />
                   )}
+                  <span className="relative z-10">{link.label}</span>
                 </button>
               ))}
             </nav>

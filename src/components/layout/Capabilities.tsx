@@ -85,7 +85,7 @@ export function Capabilities() {
               </div>
 
               <div className="p-6 -mt-8 relative">
-                <div className="w-12 h-12 rounded-xl bg-[var(--color-warn-orange)] flex items-center justify-center text-[var(--color-bg-control)] mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-warn-orange)] flex items-center justify-center text-[var(--color-bg-control)] mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]">
                   {SERVICE_ICONS[service.id] || (
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                       <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
@@ -100,15 +100,20 @@ export function Capabilities() {
                   {service.description}
                 </p>
 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mb-4">
                   {service.tags.slice(0, 3).map((tag: string, j: number) => (
                     <span
                       key={j}
-                      className="text-[10px] font-mono px-2 py-1 rounded-full bg-[var(--color-bg-panel)] text-[var(--color-text-muted)] border border-[var(--color-border-panel)]"
+                      className="text-[10px] font-mono px-2 py-1 rounded-full bg-[var(--color-bg-panel)] text-[var(--color-text-muted)] border border-[var(--color-border-panel)] hover:border-[var(--color-warn-orange)]/30 hover:text-[var(--color-warn-orange)] hover:bg-[var(--color-warn-orange)]/5 transition-all duration-200 cursor-default"
                     >
                       {tag}
                     </span>
                   ))}
+                </div>
+
+                {/* Expanding bottom line */}
+                <div className="pt-4 border-t border-[var(--color-border-panel)]">
+                  <div className="h-0.5 w-8 rounded-full transition-all duration-500 group-hover:w-full bg-[var(--color-warn-orange)]" />
                 </div>
               </div>
             </motion.div>

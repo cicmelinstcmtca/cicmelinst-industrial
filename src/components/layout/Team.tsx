@@ -114,19 +114,25 @@ export function Team() {
           {/* ── Líneas verticales de Fila 1 ── */}
           <div className="hidden sm:flex justify-center gap-[calc(33.33%-40px)] sm:gap-[calc(33.33%-50px)] mb-2 px-8">
             {[0, 1, 2].map(i => (
-              <div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" />
+              <motion.div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" initial={{ scaleY: 0 }} whileInView={{ scaleY: 1 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }} style={{ transformOrigin: 'top' }} />
             ))}
           </div>
 
           {/* ── Línea horizontal conectora ── */}
-          <div className="hidden sm:block relative h-px mx-auto max-w-3xl mb-2">
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="hidden sm:block relative h-px mx-auto max-w-3xl mb-2"
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--color-pipe-blue)]/25 to-transparent" />
-          </div>
+          </motion.div>
 
           {/* ── Líneas verticales a Fila 2 ── */}
           <div className="hidden sm:flex justify-center gap-[calc(25%-30px)] sm:gap-[calc(25%-40px)] mb-2 px-4">
             {[0, 1, 2, 3].map(i => (
-              <div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" />
+              <motion.div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" initial={{ scaleY: 0 }} whileInView={{ scaleY: 1 }} viewport={{ once: true }} transition={{ delay: 0.6 + i * 0.08, duration: 0.3 }} style={{ transformOrigin: 'top' }} />
             ))}
           </div>
 
@@ -148,19 +154,25 @@ export function Team() {
           {/* ── Líneas verticales de Fila 2 ── */}
           <div className="hidden sm:flex justify-center gap-[calc(25%-30px)] sm:gap-[calc(25%-40px)] mb-2 px-4">
             {[0, 1, 2, 3].map(i => (
-              <div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" />
+              <motion.div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" initial={{ scaleY: 0 }} whileInView={{ scaleY: 1 }} viewport={{ once: true }} transition={{ delay: 0.7 + i * 0.08, duration: 0.3 }} style={{ transformOrigin: 'top' }} />
             ))}
           </div>
 
           {/* ── Línea horizontal conectora 2 ── */}
-          <div className="hidden sm:block relative h-px mx-auto max-w-3xl mb-2">
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="hidden sm:block relative h-px mx-auto max-w-3xl mb-2"
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--color-pipe-blue)]/20 to-transparent" />
-          </div>
+          </motion.div>
 
           {/* ── Líneas verticales a Fila 3 ── */}
           <div className="hidden sm:flex justify-center gap-[calc(50%-40px)] mb-2">
             {[0, 1].map(i => (
-              <div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" />
+              <motion.div key={i} className="w-px h-6 bg-[var(--color-pipe-blue)]/20" initial={{ scaleY: 0 }} whileInView={{ scaleY: 1 }} viewport={{ once: true }} transition={{ delay: 0.9 + i * 0.1, duration: 0.3 }} style={{ transformOrigin: 'top' }} />
             ))}
           </div>
 
@@ -207,11 +219,13 @@ function DirectorCard({ member, onClick }: { member: TeamMember; onClick: () => 
 
   return (
     <motion.div
-      whileHover={{ y: -6, scale: 1.02 }}
+      whileHover={{ y: -8, scale: 1.02 }}
       onClick={onClick}
       className="group relative cursor-pointer"
     >
-      <div className="relative overflow-hidden rounded-xl border border-[var(--color-pipe-blue-glow)]/30 bg-[var(--color-bg-panel)] transition-all duration-300 hover:border-[var(--color-pipe-blue-glow)]/60 hover:shadow-2xl hover:shadow-[var(--color-pipe-blue)]/15">
+      <div className="relative overflow-hidden rounded-xl border border-[var(--color-pipe-blue-glow)]/30 bg-[var(--color-bg-panel)] transition-all duration-300 hover:border-[var(--color-pipe-blue-glow)]/60 hover:shadow-[0_12px_40px_rgba(0,102,204,0.2)] hover:shadow-[0_0_0_1px_rgba(0,153,255,0.15)]">
+        {/* Inner glow on hover */}
+        <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none shadow-[inset_0_0_30px_rgba(0,153,255,0.05)]" />
         {/* Top accent */}
         <div className="h-1.5 bg-gradient-to-r from-[var(--color-pipe-blue-glow)] via-[var(--color-pipe-blue)] to-[var(--color-pipe-blue-glow)]" />
 

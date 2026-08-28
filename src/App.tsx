@@ -47,15 +47,26 @@ function AppContent() {
   if (!mounted) {
     return (
       <div className="min-h-[100dvh] bg-[var(--color-bg-control)] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-pulse flex items-center justify-center gap-3 mb-4">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--color-warn-orange)]">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 6v6l4 2"/>
-            </svg>
-            <span className="text-sm font-mono text-[var(--color-text-primary)]">Cargando...</span>
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
+          <motion.img
+            src="/logo.png"
+            alt="CICMELINST"
+            className="h-16 mx-auto mb-6"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          <div className="w-48 h-1 bg-[var(--color-border-panel)] rounded-full mx-auto overflow-hidden">
+            <motion.div
+              className="h-full bg-[var(--color-warn-orange)] rounded-full"
+              initial={{ width: '0%' }}
+              animate={{ width: '100%' }}
+              transition={{ duration: 2, ease: 'easeInOut' }}
+            />
           </div>
-        </div>
+          <p className="mt-4 text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-widest">
+            Iniciando sistema...
+          </p>
+        </motion.div>
       </div>
     );
   }
@@ -138,16 +149,26 @@ function App() {
       fallback={
         <div className="min-h-[100dvh] bg-[var(--color-bg-control)] flex items-center justify-center">
           <div className="text-center p-8">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-4">Error del Sistema</h1>
-            <p className="text-[var(--color-text-secondary)] mb-6 max-w-md mx-auto">
-              Ha ocurrido un error inesperado. Por favor, recargue la página.
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-[var(--color-alarm-red)]/5 border border-[var(--color-alarm-red)]/20 flex items-center justify-center">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-alarm-red)" strokeWidth="1.5">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2" style={{ fontFamily: 'var(--font-family-display)' }}>Error del Sistema</h1>
+            <p className="text-sm text-[var(--color-text-muted)] mb-6 max-w-md mx-auto">
+              Ha ocurrido un error inesperado. Por favor, intente de nuevo.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-[var(--color-warn-orange)] text-[var(--color-bg-control)] font-semibold rounded-lg hover:bg-[var(--color-warn-orange-glow)] transition-all"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-[var(--color-pipe-blue)] text-white rounded-xl hover:bg-[var(--color-pipe-blue-glow)] transition-all active:scale-[0.98]"
             >
-              Recargar
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M1 4v6h6M23 20v-6h-6" />
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
+              </svg>
+              Reintentar
             </button>
           </div>
         </div>

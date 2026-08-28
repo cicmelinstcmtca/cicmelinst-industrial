@@ -344,6 +344,13 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
   const [activeImage, setActiveImage] = useState(0);
   const hasGallery = selected.gallery && selected.gallery.length > 0;
 
+  // Keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') onClose();
+    if (e.key === 'ArrowLeft') setActiveImage((prev) => Math.max(0, prev - 1));
+    if (e.key === 'ArrowRight' && hasGallery) setActiveImage((prev) => Math.min(selected.gallery.length - 1, prev + 1));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -351,6 +358,8 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--color-bg-control)]/80 backdrop-blur-sm"
       onClick={onClose}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -387,7 +396,7 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
           </div>
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-[var(--color-bg-control)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-control)]"
+            className="absolute top-4 right-4 p-2 rounded-full bg-[var(--color-bg-control)] text-[var(--color-text-primary)] hover:bg-[var(--color-alarm-red)]/10 hover:text-[var(--color-alarm-red)] hover:ring-2 hover:ring-[var(--color-alarm-red)]/20 transition-all duration-200 active:scale-95"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -400,11 +409,18 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
         {hasGallery && (
           <div className="border-b border-[var(--color-border-panel)]">
             <div className="aspect-[16/9] relative overflow-hidden">
-              <img
-                src={selected.gallery[activeImage]}
-                alt={`${selected.title} - ${activeImage + 1}`}
-                className="w-full h-full object-cover"
-              />
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeImage}
+                  src={selected.gallery[activeImage]}
+                  alt={`${selected.title} - ${activeImage + 1}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full h-full object-cover"
+                />
+              </AnimatePresence>
             </div>
             {selected.gallery.length > 1 && (
               <div className="flex gap-2 p-3 overflow-x-auto">

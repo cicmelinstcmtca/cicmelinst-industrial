@@ -264,14 +264,21 @@ function LifeTimeline() {
               data-timeline-card=""
               className={`flex-shrink-0 w-[300px] snap-center p-6 rounded-2xl border transition-all duration-300 select-none ${
                 i === activeIndex
-                  ? 'bg-[var(--color-bg-control)] border-[var(--color-warn-orange)]/50 shadow-lg shadow-[var(--color-warn-orange)]/10 scale-[1.02]'
-                  : 'bg-[var(--color-bg-control)]/50 border-[var(--color-border-panel)] hover:border-[var(--color-border-panel)]'
+                  ? 'bg-[var(--color-bg-control)] border-[var(--color-warn-orange)]/50 shadow-lg shadow-[var(--color-warn-orange)]/10 scale-[1.02] ring-1 ring-[var(--color-warn-orange)]/10'
+                  : 'bg-[var(--color-bg-control)]/50 border-[var(--color-border-panel)] hover:border-[var(--color-border-panel)] hover:shadow-md'
               }`}
             >
               {/* Year */}
-              <div className="text-4xl font-bold text-[var(--color-warn-orange)]/20 mb-3" style={{ fontFamily: 'var(--font-family-display)' }}>
+              <motion.div
+                key={item.year}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+                className="text-4xl font-bold text-[var(--color-warn-orange)]/20 mb-3"
+                style={{ fontFamily: 'var(--font-family-display)' }}
+              >
                 {item.year}
-              </div>
+              </motion.div>
 
               {/* Dot */}
               <div className="flex items-center gap-3 mb-3">
@@ -522,8 +529,10 @@ function CapabilitiesMap() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.08 }}
-              className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer"
+              className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer border border-transparent hover:border-[var(--color-warn-orange)]/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
             >
+              {/* Top accent stripe */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[var(--color-warn-orange)] to-[var(--color-warn-orange-glow)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
               <img
                 src={sector.image}
                 alt={sector.name}
@@ -537,7 +546,7 @@ function CapabilitiesMap() {
                 <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-1" style={{ fontFamily: 'var(--font-family-display)' }}>
                   {sector.name}
                 </h3>
-                <p className="text-xs text-[var(--color-text-secondary)] transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                <p className="text-xs text-[var(--color-text-secondary)] transform translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out delay-100">
                   {sector.detail}
                 </p>
               </div>

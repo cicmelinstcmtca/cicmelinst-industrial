@@ -78,13 +78,13 @@ export function Marquee({ speed = 50, className = '', gap = 48 }: MarqueeProps) 
         {clonedClients.map((client, index) => (
           <div
             key={`${client.name}-${index}`}
-            className="flex-shrink-0 px-6 py-3 rounded-xl bg-[var(--color-bg-panel)] border border-[var(--color-border-panel)]/50 hover:border-[var(--color-warn-orange)]/30 transition-all duration-300"
+            className="flex-shrink-0 px-8 py-4 rounded-2xl bg-[var(--color-bg-panel)]/80 backdrop-blur-sm border border-[var(--color-border-panel)]/50 hover:border-[var(--color-warn-orange)]/30 hover:bg-[var(--color-bg-panel)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_0_15px_rgba(255,102,0,0.05)] transition-all duration-500 ease-out"
             role="listitem"
           >
             <img
               src={client.logo}
               alt={client.name}
-              className="h-12 lg:h-14 w-auto object-contain opacity-50 hover:opacity-100 grayscale hover:grayscale-0 transition-all duration-300"
+              className="h-12 lg:h-14 w-auto object-contain opacity-40 hover:opacity-100 grayscale hover:grayscale-0 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.1)] transition-all duration-500"
               loading="lazy"
             />
           </div>
@@ -92,8 +92,8 @@ export function Marquee({ speed = 50, className = '', gap = 48 }: MarqueeProps) 
       </div>
 
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[var(--color-bg-control)] to-transparent" />
-        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[var(--color-bg-control)] to-transparent" />
+        <div className="absolute left-0 top-0 bottom-0 w-32 lg:w-48 bg-gradient-to-r from-[var(--color-bg-control)] to-transparent" />
+        <div className="absolute right-0 top-0 bottom-0 w-32 lg:w-48 bg-gradient-to-l from-[var(--color-bg-control)] to-transparent" />
       </div>
     </div>
   );
@@ -101,8 +101,9 @@ export function Marquee({ speed = 50, className = '', gap = 48 }: MarqueeProps) 
 
 export function MarqueeSection() {
   return (
-    <section id="clients" className="py-16 lg:py-20 bg-[var(--color-bg-control)]" aria-labelledby="marquee-title">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="clients" className="py-16 lg:py-20 bg-[var(--color-bg-control)] relative overflow-hidden" aria-labelledby="marquee-title">
+      <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle, var(--color-text-muted) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Header */}
         <div className="text-center mb-12">
           <motion.span
@@ -147,13 +148,15 @@ export function MarqueeSection() {
           className="flex flex-wrap justify-center gap-6 mt-12 pt-8 border-t border-[var(--color-border-panel)]/50"
         >
           {[
-            { icon: '🛡️', label: 'Certificación SIHO' },
-            { icon: '📋', label: 'Normativa PDVSA' },
-            { icon: '⚡', label: 'Retie / Retilap' },
-            { icon: '🏭', label: '+14 Años' },
+            { label: 'Certificación SIHO', path: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' },
+            { label: 'Normativa PDVSA', path: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
+            { label: 'Retie / Retilap', path: 'M13 10V3L4 14h7v7l9-11h-7z' },
+            { label: '+14 Años', path: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
           ].map((badge) => (
             <div key={badge.label} className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-              <span>{badge.icon}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-insul-green)" strokeWidth="1.5">
+                <path d={badge.path} />
+              </svg>
               <span className="font-mono uppercase tracking-wider">{badge.label}</span>
             </div>
           ))}

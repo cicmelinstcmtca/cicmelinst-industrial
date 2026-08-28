@@ -154,31 +154,44 @@ export function Hero({ onSectionNavigate }: HeroProps) {
           <button
             key={i}
             onClick={() => setCurrentImage(i)}
-            className={`w-2 h-2 rounded-full transition-all ${
-              i === currentImage
-                ? 'bg-[var(--color-warn-orange)] w-8'
-                : 'bg-[var(--color-text-muted)]/50 hover:bg-[var(--color-text-muted)]'
+            className={`relative h-2 rounded-full overflow-hidden transition-all duration-500 ${
+              i === currentImage ? 'w-10' : 'w-2 hover:bg-[var(--color-text-muted)]/40'
             }`}
             aria-label={`Imagen ${i + 1}`}
-          />
+          >
+            <span className={`absolute inset-0 rounded-full ${
+              i === currentImage ? 'bg-[var(--color-warn-orange)]' : 'bg-[var(--color-text-muted)]/30'
+            }`} />
+            {i === currentImage && (
+              <motion.span
+                className="absolute inset-0 rounded-full bg-[var(--color-warn-orange-glow)]"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 5, ease: 'linear' }}
+                style={{ transformOrigin: 'left' }}
+              />
+            )}
+          </button>
         ))}
       </div>
 
       {/* Scroll indicator */}
       <motion.div
-        className="absolute bottom-8 right-8 hidden lg:flex flex-col items-center gap-2 text-[var(--color-text-muted)]"
+        className="absolute bottom-8 right-8 hidden lg:flex flex-col items-center gap-3"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
       >
-        <span className="text-[10px] font-mono uppercase tracking-widest [writing-mode:vertical-lr]">
+        <span className="text-[10px] font-mono uppercase tracking-widest [writing-mode:vertical-lr] text-[var(--color-text-muted)]">
           Scroll
         </span>
-        <motion.div
-          className="w-px h-8 bg-[var(--color-text-muted)]/30"
-          animate={{ scaleY: [0, 1, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
+        <div className="w-5 h-8 rounded-full border-2 border-[var(--color-text-muted)]/30 flex items-start justify-center p-1">
+          <motion.div
+            className="w-1 h-2 rounded-full bg-[var(--color-warn-orange)]"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        </div>
       </motion.div>
     </section>
   );
