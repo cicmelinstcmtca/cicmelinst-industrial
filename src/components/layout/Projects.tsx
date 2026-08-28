@@ -129,6 +129,28 @@ export function Projects() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
+            {/* Stats row */}
+            <div className="flex items-center gap-6 mb-6 pb-4 border-b border-[var(--color-border-panel)]">
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-[var(--color-pipe-blue-glow)]" style={{ fontFamily: 'var(--font-family-display)' }}>
+                  {allProjects.length}
+                </span>
+                <span className="text-xs text-[var(--color-text-muted)] font-mono uppercase tracking-wider">Proyectos totales</span>
+              </div>
+              <div className="hidden sm:flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-[var(--color-text-primary)]" style={{ fontFamily: 'var(--font-family-display)' }}>
+                  {categories.length - 1}
+                </span>
+                <span className="text-xs text-[var(--color-text-muted)] font-mono uppercase tracking-wider">Categorías</span>
+              </div>
+              <div className="hidden sm:flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-[var(--color-text-primary)]" style={{ fontFamily: 'var(--font-family-display)' }}>
+                  {featured.length}
+                </span>
+                <span className="text-xs text-[var(--color-text-muted)] font-mono uppercase tracking-wider">Con fotografía</span>
+              </div>
+            </div>
+
             {/* Back button + Filters */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <button
@@ -184,6 +206,7 @@ export function Projects() {
 
 function ProjectCard({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) {
   const config = CATEGORY_CONFIG[project.category] || CATEGORY_CONFIG['Eléctrico'];
+  const hasPhoto = project.image && !project.image.includes('placeholder');
 
   return (
     <motion.div
@@ -194,26 +217,63 @@ function ProjectCard({ project, index, onClick }: { project: Project; index: num
       onClick={onClick}
       className="group relative rounded-xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 transition-all duration-300 bg-[var(--color-bg-panel)]"
     >
+      {/* Left color strip */}
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[var(--color-pipe-blue-glow)] to-[var(--color-pipe-blue)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
       <div className="aspect-[16/9] relative overflow-hidden">
-        <img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-panel)] via-transparent to-transparent" />
+        {hasPhoto ? (
+          <>
+            <img
+              src={project.image}
+              alt={project.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-panel)] via-transparent to-transparent" />
+          </>
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-[var(--color-bg-control)] to-[var(--color-bg-panel)] flex items-center justify-center relative">
+            {/* Grid pattern */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{
+              backgroundImage: `linear-gradient(${config.color} 1px, transparent 1px), linear-gradient(90deg, ${config.color} 1px, transparent 1px)`,
+              backgroundSize: '20px 20px'
+            }} />
+            {/* CMT Logo */}
+            <img
+              src="/logo.png"
+              alt="CICMELINST"
+              className="w-16 h-16 object-contain opacity-20 group-hover:opacity-30 transition-opacity duration-300"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="p-4">
-        <span
-          className="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded-full border mb-2"
-          style={{ color: config.color, borderColor: `${config.color}33`, backgroundColor: `${config.color}10` }}
-        >
-          {project.category}
-        </span>
+        <div className="flex items-center gap-2 mb-2">
+          <span
+            className="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded-full border"
+            style={{ color: config.color, borderColor: `${config.color}33`, backgroundColor: `${config.color}10` }}
+          >
+            {project.category}
+          </span>
+          <span className="text-[9px] font-mono text-[var(--color-text-muted)]">
+            {project.year}
+          </span>
+        </div>
         <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1 group-hover:text-[var(--color-pipe-blue-glow)] transition-colors line-clamp-2" style={{ fontFamily: 'var(--font-family-display)' }}>
           {project.title}
         </h3>
-        <p className="text-xs text-[var(--color-text-secondary)] line-clamp-2">{project.description}</p>
+        <p className="text-xs text-[var(--color-text-secondary)] line-clamp-2 mb-3">{project.description}</p>
+
+        {/* Client + Ver */}
+        <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border-panel)]">
+          <span className="text-[10px] text-[var(--color-text-muted)] font-mono">{project.client}</span>
+          <span className="text-[10px] text-[var(--color-pipe-blue-glow)] font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+            Ver proyecto →
+          </span>
+        </div>
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-pipe-blue-glow)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -231,14 +291,24 @@ function ProjectRow({ project, index, onClick }: { project: Project; index: numb
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.03 }}
       onClick={onClick}
-      className="group flex items-center gap-4 p-4 rounded-xl border border-[var(--color-border-panel)] bg-[var(--color-bg-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 cursor-pointer transition-all"
+      className="group flex items-center gap-4 p-4 rounded-xl border border-[var(--color-border-panel)] bg-[var(--color-bg-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 cursor-pointer transition-all relative overflow-hidden"
     >
-      {/* Thumbnail or icon */}
-      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[var(--color-bg-control)] flex items-center justify-center">
+      {/* Left color strip */}
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[var(--color-pipe-blue-glow)] to-[var(--color-pipe-blue)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+      {/* Thumbnail or CMT logo */}
+      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[var(--color-bg-control)] flex items-center justify-center border border-[var(--color-border-panel)]">
         {hasPhoto ? (
           <img src={project.image} alt="" className="w-full h-full object-cover" />
         ) : (
-          <span className="text-2xl opacity-30">{config.icon}</span>
+          <img
+            src="/logo.png"
+            alt="CICMELINST"
+            className="w-10 h-10 object-contain opacity-25"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
         )}
       </div>
 
