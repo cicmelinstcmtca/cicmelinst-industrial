@@ -409,6 +409,9 @@ export const projects: Project[] = [
   }
 ];
 
+// Featured projects with real photos (for main section)
+export const featuredProjects: Project[] = projects.filter(p => p.image && !p.image.includes('placeholder'));
+
 export function getProjectBySlug(slug: string): Project | undefined {
   return projects.find(p => p.slug === slug);
 }

@@ -1,8 +1,12 @@
 import { useMemo } from 'react';
-import { projects, getProjectBySlug, getProjectsByCategory, getProjectsByClient, projectCategories, projectClients } from '../data';
+import { projects, featuredProjects, getProjectBySlug, getProjectsByCategory, getProjectsByClient, projectCategories, projectClients } from '../data';
 
 export function useProjects() {
   return useMemo(() => projects, []);
+}
+
+export function useFeaturedProjects() {
+  return useMemo(() => featuredProjects, []);
 }
 
 export function useProject(slug: string) {

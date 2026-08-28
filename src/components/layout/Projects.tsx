@@ -1,29 +1,36 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useProjects } from '../../hooks';
+import { useFeaturedProjects, useProjects } from '../../hooks';
 import type { Project } from '../../data/types';
 
-const CATEGORY_CONFIG: Record<string, { icon: string; gradient: string; color: string }> = {
-  'Eléctrico': { icon: '⚡', gradient: 'from-amber-500/15 via-orange-500/8 to-transparent', color: '#3B82F6' },
-  'Automatización': { icon: '🔧', gradient: 'from-blue-500/15 via-cyan-500/8 to-transparent', color: '#60A5FA' },
-  'Construcción': { icon: '🏗️', gradient: 'from-stone-500/15 via-gray-500/8 to-transparent', color: '#9CA3AF' },
-  'Protección': { icon: '🛡️', gradient: 'from-emerald-500/15 via-green-500/8 to-transparent', color: '#009944' },
-  'Mantenimiento': { icon: '🔩', gradient: 'from-slate-500/15 via-gray-500/8 to-transparent', color: '#6B7280' },
+const CATEGORY_CONFIG: Record<string, { icon: string; color: string }> = {
+  'Eléctrico': { icon: '⚡', color: '#3B82F6' },
+  'Automatización': { icon: '🔧', color: '#60A5FA' },
+  'Construcción': { icon: '🏗️', color: '#9CA3AF' },
+  'Protección': { icon: '🛡️', color: '#009944' },
+  'Mantenimiento': { icon: '🔩', color: '#6B7280' },
 };
 
 export function Projects() {
+  const featured = useFeaturedProjects();
   const allProjects = useProjects();
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
+  const [filter, setFilter] = useState<string>('Todos');
 
   const selected = allProjects.find((p: Project) => p.slug === selectedProject) || null;
-  const featured = allProjects[0];
-  const rest = allProjects.slice(1);
+
+  const filteredProjects = filter === 'Todos'
+    ? allProjects
+    : allProjects.filter(p => p.category === filter);
+
+  const categories = ['Todos', ...new Set(allProjects.map(p => p.category))];
 
   return (
     <section id="projects" className="py-20 lg:py-32 bg-[var(--color-bg-control)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -53,47 +60,116 @@ export function Projects() {
           </motion.p>
         </div>
 
-        {/* Asymmetric Grid */}
-        <div className="space-y-4">
-          {/* Featured: first project */}
+        {/* Featured Grid — only 4 with photos */}
+        {!showAll && (
+          <div className="space-y-4 mb-8">
+            {/* Featured: first project */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.5 }}
+              onClick={() => setSelectedProject(featured[0]?.slug)}
+              className="group relative rounded-xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 transition-all duration-300 bg-[var(--color-bg-panel)]"
+            >
+              <div className="aspect-[16/7] sm:aspect-[3/1] relative overflow-hidden">
+                <img
+                  src={featured[0]?.image}
+                  alt={featured[0]?.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-panel)] via-[var(--color-bg-panel)]/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 lg:p-8">
+                  <span
+                    className="inline-block text-[10px] font-mono px-2 py-0.5 rounded-full border mb-2"
+                    style={{ color: CATEGORY_CONFIG[featured[0]?.category]?.color || '#3B82F6', borderColor: `${CATEGORY_CONFIG[featured[0]?.category]?.color || '#3B82F6'}33`, backgroundColor: `${CATEGORY_CONFIG[featured[0]?.category]?.color || '#3B82F6'}10` }}
+                  >
+                    {featured[0]?.category}
+                  </span>
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--color-text-primary)] mb-1" style={{ fontFamily: 'var(--font-family-display)' }}>
+                    {featured[0]?.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] max-w-xl line-clamp-2">{featured[0]?.description}</p>
+                </div>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-pipe-blue-glow)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.div>
+
+            {/* 3 smaller cards */}
+            <div className="grid sm:grid-cols-3 gap-4">
+              {featured.slice(1, 4).map((project: Project, i: number) => (
+                <ProjectCard key={project.id} project={project} index={i} onClick={() => setSelectedProject(project.slug)} />
+              ))}
+            </div>
+
+            {/* Ver todos */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-center pt-4"
+            >
+              <button
+                onClick={() => setShowAll(true)}
+                className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-[var(--color-pipe-blue-glow)] border border-[var(--color-pipe-blue-glow)]/30 rounded-lg hover:bg-[var(--color-pipe-blue-glow)]/10 transition-all"
+              >
+                Ver todos los proyectos
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Full list view */}
+        {showAll && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.5 }}
-            onClick={() => setSelectedProject(featured.slug)}
-            className="group relative rounded-xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 transition-all duration-300 bg-[var(--color-bg-panel)]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
           >
-            <div className="aspect-[16/7] sm:aspect-[3/1] relative overflow-hidden">
-              <img
-                src={featured.image}
-                alt={featured.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-panel)] via-[var(--color-bg-panel)]/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 lg:p-8">
-                <span
-                  className="inline-block text-[10px] font-mono px-2 py-0.5 rounded-full border mb-2"
-                  style={{ color: CATEGORY_CONFIG[featured.category]?.color || '#3B82F6', borderColor: `${CATEGORY_CONFIG[featured.category]?.color || '#3B82F6'}33`, backgroundColor: `${CATEGORY_CONFIG[featured.category]?.color || '#3B82F6'}10` }}
-                >
-                  {featured.category}
-                </span>
-                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--color-text-primary)] mb-1" style={{ fontFamily: 'var(--font-family-display)' }}>
-                  {featured.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] max-w-xl line-clamp-2">{featured.description}</p>
+            {/* Back button + Filters */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+              <button
+                onClick={() => setShowAll(false)}
+                className="inline-flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Volver a destacados
+              </button>
+
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setFilter(cat)}
+                    className={`text-xs font-mono px-3 py-1.5 rounded-full border transition-all ${
+                      filter === cat
+                        ? 'bg-[var(--color-pipe-blue-glow)]/10 text-[var(--color-pipe-blue-glow)] border-[var(--color-pipe-blue-glow)]/30'
+                        : 'text-[var(--color-text-muted)] border-[var(--color-border-panel)] hover:border-[var(--color-pipe-blue-glow)]/20'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
               </div>
             </div>
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-pipe-blue-glow)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </motion.div>
 
-          {/* Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {rest.map((project: Project, i: number) => (
-              <ProjectCard key={project.id} project={project} index={i} onClick={() => setSelectedProject(project.slug)} />
-            ))}
-          </div>
-        </div>
+            {/* Projects list */}
+            <div className="space-y-3">
+              {filteredProjects.map((project: Project, i: number) => (
+                <ProjectRow key={project.id} project={project} index={i} onClick={() => setSelectedProject(project.slug)} />
+              ))}
+            </div>
+
+            <div className="text-center mt-6 text-xs text-[var(--color-text-muted)] font-mono">
+              {filteredProjects.length} proyecto{filteredProjects.length !== 1 ? 's' : ''}
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* Modal */}
@@ -108,75 +184,90 @@ export function Projects() {
 
 function ProjectCard({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) {
   const config = CATEGORY_CONFIG[project.category] || CATEGORY_CONFIG['Eléctrico'];
-  const hasImage = project.image && !project.image.includes('placeholder');
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.4, delay: index * 0.04 }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
       onClick={onClick}
       className="group relative rounded-xl overflow-hidden cursor-pointer border border-[var(--color-border-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 transition-all duration-300 bg-[var(--color-bg-panel)]"
     >
-      {hasImage ? (
-        <div className="aspect-[16/9] relative overflow-hidden">
-          <img
-            src={project.image}
-            alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-panel)] via-transparent to-transparent" />
-        </div>
-      ) : (
-        <div className={`aspect-[16/9] relative bg-gradient-to-br ${config.gradient} overflow-hidden`}>
-          <div className="absolute inset-0 opacity-[0.04]" style={{
-            backgroundImage: `linear-gradient(${config.color} 1px, transparent 1px), linear-gradient(90deg, ${config.color} 1px, transparent 1px)`,
-            backgroundSize: '20px 20px'
-          }} />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-5xl opacity-15 group-hover:opacity-25 group-hover:scale-110 transition-all duration-500">{config.icon}</span>
-          </div>
-        </div>
-      )}
+      <div className="aspect-[16/9] relative overflow-hidden">
+        <img
+          src={project.image}
+          alt={project.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-panel)] via-transparent to-transparent" />
+      </div>
 
       <div className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <span
-            className="text-[9px] font-mono px-1.5 py-0.5 rounded-full border"
-            style={{ color: config.color, borderColor: `${config.color}33`, backgroundColor: `${config.color}10` }}
-          >
-            {project.category}
-          </span>
-        </div>
-
+        <span
+          className="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded-full border mb-2"
+          style={{ color: config.color, borderColor: `${config.color}33`, backgroundColor: `${config.color}10` }}
+        >
+          {project.category}
+        </span>
         <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1 group-hover:text-[var(--color-pipe-blue-glow)] transition-colors line-clamp-2" style={{ fontFamily: 'var(--font-family-display)' }}>
           {project.title}
         </h3>
-
-        <p className="text-xs text-[var(--color-text-secondary)] line-clamp-2 mb-3">
-          {project.description}
-        </p>
-
-        <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border-panel)]">
-          <div className="flex items-center gap-1 text-[10px] text-[var(--color-text-muted)]">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            {project.location}
-          </div>
-          <div className="flex items-center gap-1 text-[10px] text-[var(--color-text-muted)]">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-            </svg>
-            {project.client}
-          </div>
-        </div>
+        <p className="text-xs text-[var(--color-text-secondary)] line-clamp-2">{project.description}</p>
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-pipe-blue-glow)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    </motion.div>
+  );
+}
+
+function ProjectRow({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) {
+  const config = CATEGORY_CONFIG[project.category] || CATEGORY_CONFIG['Eléctrico'];
+  const hasPhoto = project.image && !project.image.includes('placeholder');
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.03 }}
+      onClick={onClick}
+      className="group flex items-center gap-4 p-4 rounded-xl border border-[var(--color-border-panel)] bg-[var(--color-bg-panel)] hover:border-[var(--color-pipe-blue-glow)]/30 cursor-pointer transition-all"
+    >
+      {/* Thumbnail or icon */}
+      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[var(--color-bg-control)] flex items-center justify-center">
+        {hasPhoto ? (
+          <img src={project.image} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <span className="text-2xl opacity-30">{config.icon}</span>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <h4 className="text-sm font-semibold text-[var(--color-text-primary)] truncate group-hover:text-[var(--color-pipe-blue-glow)] transition-colors" style={{ fontFamily: 'var(--font-family-display)' }}>
+          {project.title}
+        </h4>
+        <div className="flex items-center gap-2 mt-1 text-[10px] text-[var(--color-text-muted)] font-mono">
+          <span>{project.client}</span>
+          <span>•</span>
+          <span>{project.location}</span>
+          <span>•</span>
+          <span>{project.year}</span>
+        </div>
+      </div>
+
+      {/* Category badge */}
+      <span
+        className="hidden sm:inline-block text-[9px] font-mono px-2 py-0.5 rounded-full border flex-shrink-0"
+        style={{ color: config.color, borderColor: `${config.color}33`, backgroundColor: `${config.color}10` }}
+      >
+        {project.category}
+      </span>
+
+      {/* Arrow */}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--color-text-muted)] group-hover:text-[var(--color-pipe-blue-glow)] transition-colors flex-shrink-0">
+        <path d="M9 18l6-6-6-6" />
+      </svg>
     </motion.div>
   );
 }
@@ -185,7 +276,8 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
   const selected = allProjects.find((p: Project) => p.slug === slug);
   if (!selected) return null;
 
-  const config = CATEGORY_CONFIG[selected.category] || CATEGORY_CONFIG['Eléctrico'];
+  const [activeImage, setActiveImage] = useState(0);
+  const hasGallery = selected.gallery && selected.gallery.length > 0;
 
   return (
     <motion.div
@@ -199,24 +291,33 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="bg-[var(--color-bg-panel)] border border-[var(--color-border-panel)] rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+        className="bg-[var(--color-bg-panel)] border border-[var(--color-border-panel)] rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Header with Logo CMT */}
         <div className="relative p-6 border-b border-[var(--color-border-panel)]">
           <div className="flex items-start gap-4">
-            <span className="text-4xl">{config.icon}</span>
+            {/* Logo CMT instead of category icon */}
+            <div className="w-14 h-14 rounded-xl bg-[var(--color-bg-control)] border border-[var(--color-border-panel)] flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <img
+                src="/logo.png"
+                alt="CICMELINST"
+                className="w-10 h-10 object-contain"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                  (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              <span className="hidden text-lg font-bold text-[var(--color-pipe-blue-glow)]" style={{ fontFamily: 'var(--font-family-display)' }}>CMT</span>
+            </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <span
-                  className="text-xs font-mono px-2 py-0.5 rounded-full border"
-                  style={{ color: config.color, borderColor: `${config.color}33`, backgroundColor: `${config.color}10` }}
-                >
-                  {selected.category}
-                </span>
                 <span className="text-xs text-[var(--color-text-muted)]">•</span>
                 <span className="text-xs text-[var(--color-text-muted)]">{selected.location}</span>
+                <span className="text-xs text-[var(--color-text-muted)]">•</span>
+                <span className="text-xs text-[var(--color-text-muted)]">{selected.year}</span>
               </div>
-              <h3 className="text-2xl font-bold text-[var(--color-text-primary)]" style={{ fontFamily: 'var(--font-family-display)' }}>
+              <h3 className="text-xl font-bold text-[var(--color-text-primary)]" style={{ fontFamily: 'var(--font-family-display)' }}>
                 {selected.title}
               </h3>
               <p className="text-sm text-[var(--color-pipe-blue-glow)] mt-1">{selected.client}</p>
@@ -226,29 +327,58 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full bg-[var(--color-bg-control)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-control)]"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        {/* Gallery */}
+        {hasGallery && (
+          <div className="border-b border-[var(--color-border-panel)]">
+            <div className="aspect-[16/9] relative overflow-hidden">
+              <img
+                src={selected.gallery[activeImage]}
+                alt={`${selected.title} - ${activeImage + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {selected.gallery.length > 1 && (
+              <div className="flex gap-2 p-3 overflow-x-auto">
+                {selected.gallery.map((img: string, i: number) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImage(i)}
+                    className={`w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
+                      i === activeImage ? 'border-[var(--color-pipe-blue-glow)]' : 'border-transparent opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="p-6 space-y-5">
           <div>
-            <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">Descripción</h4>
+            <h4 className="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-widest mb-2">Descripción</h4>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{selected.description}</p>
           </div>
 
           {selected.technicalDescription && (
             <div className="p-4 bg-[var(--color-bg-control)] rounded-lg">
-              <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">Detalle Técnico</h4>
+              <h4 className="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-widest mb-2">Detalle Técnico</h4>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{selected.technicalDescription}</p>
             </div>
           )}
 
           {selected.services && selected.services.length > 0 && (
             <div>
-              <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Servicios</h4>
+              <h4 className="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-widest mb-3">Servicios</h4>
               <div className="flex flex-wrap gap-2">
                 {selected.services.map((service: string, i: number) => (
                   <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-[var(--color-bg-control)] text-[var(--color-text-secondary)] border border-[var(--color-border-panel)]">
@@ -261,11 +391,11 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
 
           {selected.results && selected.results.length > 0 && (
             <div>
-              <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Resultados</h4>
+              <h4 className="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-widest mb-3">Resultados</h4>
               <ul className="space-y-2">
                 {selected.results.map((result: string, i: number) => (
                   <li key={i} className="text-sm text-[var(--color-text-secondary)] flex items-start gap-2">
-                    <span className="text-[var(--color-insul-green)] mt-1">✓</span>
+                    <span className="text-[var(--color-insul-green)] mt-0.5">✓</span>
                     {result}
                   </li>
                 ))}
@@ -275,7 +405,7 @@ function ProjectModal({ project: slug, onClose, allProjects }: { project: string
 
           {selected.technologies && selected.technologies.length > 0 && (
             <div>
-              <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Tecnologías</h4>
+              <h4 className="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-widest mb-3">Tecnologías</h4>
               <div className="flex flex-wrap gap-2">
                 {selected.technologies.map((tech: string, i: number) => (
                   <span key={i} className="text-xs font-mono px-3 py-1.5 rounded-full bg-[var(--color-pipe-blue-glow)]/10 text-[var(--color-pipe-blue-glow)] border border-[var(--color-pipe-blue-glow)]/20">
